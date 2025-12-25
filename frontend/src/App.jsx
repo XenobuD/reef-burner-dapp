@@ -103,47 +103,78 @@ function App() {
   };
 
   const handleTriggerLottery = async () => {
-    if (!account) return;
+    if (!account) {
+      alert('⚠️ Please connect your wallet first!');
+      return;
+    }
 
     try {
       setIsTriggering(true);
       await triggerLottery();
       alert('🎉 Lottery triggered successfully! Check the winner below.');
+      setIsTriggering(false);
     } catch (error) {
       console.error('Trigger failed:', error);
+      setIsTriggering(false); // Reset immediately
+
+      // Don't show alert if user just cancelled
+      if (error.message?.includes('user rejected') || error.message?.includes('User rejected')) {
+        console.log('User cancelled transaction');
+        return;
+      }
+
       alert(`❌ Failed to trigger lottery: ${error.message}`);
-    } finally {
-      setIsTriggering(false);
     }
   };
 
   const handleRevealWinner = async () => {
-    if (!account) return;
+    if (!account) {
+      alert('⚠️ Please connect your wallet first!');
+      return;
+    }
 
     try {
       setIsRevealing(true);
       await revealWinner();
       alert('🎉 Winner revealed successfully!');
+      setIsRevealing(false);
     } catch (error) {
       console.error('Reveal failed:', error);
+      setIsRevealing(false); // Reset immediately
+
+      // Don't show alert if user just cancelled
+      if (error.message?.includes('user rejected') || error.message?.includes('User rejected')) {
+        console.log('User cancelled transaction');
+        return;
+      }
+
       alert(`❌ Failed to reveal winner: ${error.message}`);
-    } finally {
-      setIsRevealing(false);
     }
   };
 
   const handleClaimPrize = async () => {
-    if (!account) return;
+    if (!account) {
+      alert('⚠️ Please connect your wallet first!');
+      return;
+    }
 
     try {
       setIsClaiming(true);
       await claimPrize();
       alert('💰 Prize claimed and sent to winner successfully!');
+      setIsClaiming(false);
     } catch (error) {
       console.error('Claim failed:', error);
+      setIsClaiming(false); // Reset state immediately on error
+
+      // User-friendly error messages
+      if (error.message?.includes('user rejected') || error.message?.includes('User rejected')) {
+        // User closed wallet popup - don't show error
+        console.log('User cancelled transaction');
+        return;
+      }
+
       alert(`❌ Failed to claim prize: ${error.message}`);
-    } finally {
-      setIsClaiming(false);
     }
   };
 
