@@ -1,0 +1,24 @@
+{
+  "name": "reef-burner-frontend",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "copy-abi": "node scripts/copy-abi.js"
+  },
+  "dependencies": {
+    "@reef-defi/evm-provider": "^1.0.11",
+    "ethers": "^5.7.0",
+    "framer-motion": "^12.23.26",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.2",
+    "vite": "^7.3.0"
+  }
+}

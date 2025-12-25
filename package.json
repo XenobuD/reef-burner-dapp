@@ -1,0 +1,18 @@
+{
+  "name": "reef-burner-dapp",
+  "version": "1.0.0",
+  "description": "Reef Burner dApp - Token Burn Mechanism",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@reef-defi/hardhat-reef": "^1.0.13",
+    "ethers": "^5.7.0",
+    "hardhat": "^2.22.0"
+  }
+}
