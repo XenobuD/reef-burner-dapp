@@ -52,19 +52,37 @@ export const useReefContract = () => {
   // Connect wallet
   const connectWallet = async () => {
     try {
+      console.log('🔵 Starting wallet connection...');
       setLoading(true);
+
+      // Check if Reef Wallet extension is installed
+      console.log('🔍 Checking for Reef Wallet extension...');
+      console.log('window.injectedWeb3:', window.injectedWeb3);
+
+      if (!window.injectedWeb3 || !window.injectedWeb3['reef']) {
+        alert('⚠️ Reef Wallet extension not detected!\n\nPlease install Reef Wallet from:\nhttps://chrome.google.com/webstore/detail/reef-wallet/mjgkpalnahacmhkikiommfiomhjipgjn');
+        setLoading(false);
+        return null;
+      }
+
+      console.log('✅ Reef Wallet extension detected!');
 
       const provider = await initProvider();
       if (!provider) {
         throw new Error('Failed to initialize provider');
       }
 
+      console.log('✅ Provider initialized');
+
       // Request account access from Reef Wallet
       const injectedWeb3 = window.injectedWeb3['reef'];
+      console.log('📢 Requesting account access...');
       await injectedWeb3.enable('Reef Burner dApp');
 
+      console.log('🔍 Getting accounts...');
       // Get accounts
       const accounts = await injectedWeb3.accounts.get();
+      console.log('Accounts found:', accounts);
 
       if (!accounts || accounts.length === 0) {
         throw new Error('No accounts found');
@@ -73,6 +91,7 @@ export const useReefContract = () => {
       // Use first account
       const selectedAccount = accounts[0];
       const address = selectedAccount.address;
+      console.log('✅ Using account:', address);
 
       // Create signer from selected account
       const signer = provider.getSigner(address);
@@ -80,18 +99,24 @@ export const useReefContract = () => {
 
       // Initialize contract
       if (CONTRACT_ADDRESS) {
+        console.log('📄 Initializing contract at:', CONTRACT_ADDRESS);
         const contractInstance = new ethers.Contract(
           CONTRACT_ADDRESS,
           ReefBurnerABI.abi,
           signer
         );
         setContract(contractInstance);
+        console.log('✅ Contract initialized!');
+      } else {
+        console.warn('⚠️ No contract address set!');
       }
 
       setLoading(false);
+      console.log('🎉 Wallet connected successfully!');
       return address;
     } catch (error) {
-      console.error('Error connecting wallet:', error);
+      console.error('❌ Error connecting wallet:', error);
+      alert('Failed to connect wallet: ' + error.message);
       setLoading(false);
       throw error;
     }

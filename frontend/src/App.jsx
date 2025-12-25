@@ -38,7 +38,7 @@ function App() {
     try {
       setIsBurning(true);
       await burnTokens(burnAmount);
-      setBurnAmount('950'); // Reset to minimum
+      setBurnAmount('5'); // Reset to minimum (testing mode: 5 REEF)
     } catch (error) {
       console.error('Burn failed:', error);
     } finally {
