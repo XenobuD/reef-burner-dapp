@@ -8,8 +8,8 @@ import { formatReef, parseReef, calculateBonus, calculateTickets } from '../util
 // Import contract ABI V2
 import ReefBurnerABI from '../contracts/ReefBurnerABI.json';
 
-// Contract address - will be set after deployment
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '';
+// Contract address - V2 MAINNET
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0x840f4f3acFeC2Ff45F714994b05363F1fD037dB5';
 const NETWORK = import.meta.env.VITE_NETWORK || 'reef_mainnet';
 const MAINNET_RPC = import.meta.env.VITE_MAINNET_RPC || 'wss://rpc.reefscan.com/ws';
 
