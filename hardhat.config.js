@@ -27,7 +27,7 @@ module.exports = {
       url: "https://rpc.reefscan.com",
       seeds: {
         // Seed phrase removed for security
-        // New V2 contract: 0xAe29f999d0B0987573C89C8a2aDC3642bf787BfA
+        // FINAL V2 contract: 0x44392f3FCeb4bd22d8b4DDc4569aDBed3ec7d472
       },
       scanUrl: "https://reefscan.com"
     }

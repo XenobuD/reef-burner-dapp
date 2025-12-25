@@ -9,7 +9,7 @@ import { formatReef, parseReef, calculateBonus, calculateTickets } from '../util
 import ReefBurnerABI from '../contracts/ReefBurnerABI.json';
 
 // Contract address - V2 MAINNET
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0xAe29f999d0B0987573C89C8a2aDC3642bf787BfA';
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0x44392f3FCeb4bd22d8b4DDc4569aDBed3ec7d472';
 const NETWORK = import.meta.env.VITE_NETWORK || 'reef_mainnet';
 const MAINNET_RPC = import.meta.env.VITE_MAINNET_RPC || 'wss://rpc.reefscan.com/ws';
 
