@@ -35,6 +35,12 @@ export const useReefContract = () => {
     commitBlock: 0,
     blocksUntilReveal: 0
   });
+  const [unclaimedPrizeInfo, setUnclaimedPrizeInfo] = useState({
+    amount: 0,
+    winner: null,
+    claimableUntilRound: 0,
+    roundsRemaining: 0
+  });
 
   // Wait for Reef Wallet extension to inject into page
   const waitForReefWallet = async (maxAttempts = 10, delayMs = 300) => {
@@ -415,6 +421,23 @@ export const useReefContract = () => {
     }
   }, [readContract]);
 
+  // Fetch unclaimed prize info (VIEW FUNCTION - uses readContract)
+  const fetchUnclaimedPrizeInfo = useCallback(async () => {
+    if (!readContract) return;
+
+    try {
+      const info = await readContract.getUnclaimedPrizeInfo();
+      setUnclaimedPrizeInfo({
+        amount: formatReef(info.amount),
+        winner: info.winner,
+        claimableUntilRound: info.claimableUntilRound.toNumber(),
+        roundsRemaining: info.roundsRemaining.toNumber()
+      });
+    } catch (error) {
+      console.error('❌ Error fetching unclaimed prize info:', error);
+    }
+  }, [readContract]);
+
   // Burn tokens
   const burnTokens = async (amount) => {
     if (!contract || !amount) {
@@ -520,14 +543,15 @@ export const useReefContract = () => {
         fetchParticipants(),
         fetchWinners(),
         fetchTimeRemaining(),
-        fetchRandomnessStatus()
+        fetchRandomnessStatus(),
+        fetchUnclaimedPrizeInfo()
       ]);
     } catch (error) {
       console.error('❌ Error fetching data:', error);
     } finally {
       setLoading(false);
     }
-  }, [readContract, fetchStatistics, fetchParticipants, fetchWinners, fetchTimeRemaining, fetchRandomnessStatus]);
+  }, [readContract, fetchStatistics, fetchParticipants, fetchWinners, fetchTimeRemaining, fetchRandomnessStatus, fetchUnclaimedPrizeInfo]);
 
   // Auto-refresh data (triggers when readContract is available)
   useEffect(() => {
@@ -639,6 +663,41 @@ export const useReefContract = () => {
     }
   };
 
+  // Claim prize (anyone can call to send prize to winner)
+  const claimPrize = async () => {
+    if (!contract) {
+      throw new Error('Contract not initialized');
+    }
+
+    try {
+      console.log('💰 Claiming prize for winner...');
+
+      const tx = await contract.claimPrize({
+        gasLimit: 500000
+      });
+
+      console.log('Claim transaction sent:', tx.hash);
+      const receipt = await tx.wait();
+      console.log('✅ Prize claimed!', receipt);
+
+      // Refresh all data
+      await fetchAllData();
+
+      return receipt;
+    } catch (error) {
+      console.error('Error claiming prize:', error);
+
+      if (error.message.includes('No unclaimed prize')) {
+        throw new Error('No prize available to claim');
+      }
+      if (error.message.includes('Claim period expired')) {
+        throw new Error('Claim period has expired (10 rounds passed)');
+      }
+
+      throw error;
+    }
+  };
+
   return {
     account,
     provider,
@@ -649,11 +708,13 @@ export const useReefContract = () => {
     burnTokens,
     triggerLottery,
     revealWinner,
+    claimPrize,
     statistics,
     participants,
     winners,
     timeRemaining,
     randomnessStatus,
+    unclaimedPrizeInfo,
     loading,
     availableAccounts
   };

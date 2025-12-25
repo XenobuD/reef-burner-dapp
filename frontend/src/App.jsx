@@ -26,11 +26,13 @@ function App() {
     burnTokens,
     triggerLottery,
     revealWinner,
+    claimPrize,
     statistics,
     participants,
     winners,
     timeRemaining,
     randomnessStatus,
+    unclaimedPrizeInfo,
     loading,
     availableAccounts
   } = contractHook();
@@ -39,6 +41,7 @@ function App() {
   const [isBurning, setIsBurning] = useState(false);
   const [isTriggering, setIsTriggering] = useState(false);
   const [isRevealing, setIsRevealing] = useState(false);
+  const [isClaiming, setIsClaiming] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
 
   // Check URL parameters to auto-open About modal
@@ -126,6 +129,21 @@ function App() {
       alert(`❌ Failed to reveal winner: ${error.message}`);
     } finally {
       setIsRevealing(false);
+    }
+  };
+
+  const handleClaimPrize = async () => {
+    if (!account) return;
+
+    try {
+      setIsClaiming(true);
+      await claimPrize();
+      alert('💰 Prize claimed and sent to winner successfully!');
+    } catch (error) {
+      console.error('Claim failed:', error);
+      alert(`❌ Failed to claim prize: ${error.message}`);
+    } finally {
+      setIsClaiming(false);
     }
   };
 
@@ -268,6 +286,116 @@ function App() {
                   {isRevealing ? '🔄 Revealing Winner...' : '🎲 Reveal Winner Now!'}
                 </motion.button>
               )}
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Unclaimed Prize Display (shows when there's a prize waiting to be claimed) */}
+        {unclaimedPrizeInfo && unclaimedPrizeInfo.amount > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              marginTop: '2rem',
+              textAlign: 'center'
+            }}
+          >
+            <motion.div
+              animate={{
+                scale: [1, 1.05, 1],
+                boxShadow: [
+                  '0 0 20px rgba(255, 215, 0, 0.3)',
+                  '0 0 40px rgba(255, 215, 0, 0.5)',
+                  '0 0 20px rgba(255, 215, 0, 0.3)'
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+              style={{
+                padding: '2rem',
+                background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1))',
+                border: '2px solid gold',
+                borderRadius: '16px',
+                display: 'inline-block',
+                minWidth: '400px'
+              }}
+            >
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 1, repeat: Infinity }}
+                style={{ fontSize: '3rem', marginBottom: '1rem' }}
+              >
+                💰
+              </motion.div>
+
+              <p style={{
+                fontSize: '1.5rem',
+                fontWeight: '700',
+                color: 'gold',
+                marginBottom: '1rem'
+              }}>
+                Unclaimed Prize Available!
+              </p>
+
+              <div style={{
+                background: 'rgba(0, 0, 0, 0.2)',
+                padding: '1rem',
+                borderRadius: '12px',
+                marginBottom: '1rem'
+              }}>
+                <p style={{
+                  fontSize: '2rem',
+                  fontWeight: '900',
+                  color: 'gold',
+                  marginBottom: '0.5rem'
+                }}>
+                  {parseFloat(unclaimedPrizeInfo.amount).toFixed(2)} REEF
+                </p>
+                <p style={{
+                  fontSize: '0.9rem',
+                  color: 'var(--text-secondary)'
+                }}>
+                  Winner: {unclaimedPrizeInfo.winner?.slice(0, 6)}...{unclaimedPrizeInfo.winner?.slice(-4)}
+                </p>
+              </div>
+
+              <p style={{
+                fontSize: '0.9rem',
+                color: 'orange',
+                marginBottom: '1.5rem'
+              }}>
+                ⏰ {unclaimedPrizeInfo.roundsRemaining} rounds remaining to claim
+                {unclaimedPrizeInfo.roundsRemaining <= 3 && ' - Hurry!'}
+              </p>
+
+              {account && (
+                <motion.button
+                  className="btn"
+                  onClick={handleClaimPrize}
+                  disabled={isClaiming}
+                  whileHover={!isClaiming ? { scale: 1.05 } : {}}
+                  whileTap={!isClaiming ? { scale: 0.95 } : {}}
+                  style={{
+                    background: 'linear-gradient(135deg, gold, orange)',
+                    color: '#000',
+                    padding: '1rem 2rem',
+                    fontSize: '1.1rem',
+                    fontWeight: '700',
+                    opacity: isClaiming ? 0.5 : 1,
+                    cursor: isClaiming ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {isClaiming ? '🔄 Claiming Prize...' : '💰 Claim Prize for Winner'}
+                </motion.button>
+              )}
+
+              <p style={{
+                fontSize: '0.8rem',
+                color: 'var(--text-secondary)',
+                marginTop: '1rem',
+                fontStyle: 'italic'
+              }}>
+                Anyone can trigger the claim to send the prize to the winner!
+              </p>
             </motion.div>
           </motion.div>
         )}
