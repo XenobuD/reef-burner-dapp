@@ -32,7 +32,7 @@ async function main() {
 
   // Deploy ReefBurnerV2 contract
   console.log("📦 Deploying ReefBurnerV2 contract...");
-  const ReefBurnerV2 = await hre.ethers.getContractFactory("ReefBurnerV2");
+  const ReefBurnerV2 = await hre.reef.getContractFactory("ReefBurnerV2", deployer);
   const reefBurner = await ReefBurnerV2.deploy(CREATOR_WALLET);
 
   console.log("⏳ Waiting for deployment transaction...");
