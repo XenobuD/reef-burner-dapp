@@ -231,10 +231,15 @@ code {
   letter-spacing: 1px;
 }
 
-/* Responsive */
+/* Responsive - Mobile Optimizations */
 @media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
   .card {
     padding: 1.5rem;
+    margin: 0.75rem;
   }
 
   .stat-value {
@@ -244,5 +249,154 @@ code {
   .btn {
     padding: 0.8rem 1.5rem;
     font-size: 1rem;
+    min-height: 44px; /* iOS tap target size */
+  }
+
+  /* Touch-friendly inputs */
+  input[type="number"],
+  input[type="text"] {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+    min-height: 44px;
+  }
+
+  /* Better spacing for mobile */
+  main {
+    padding: 1rem !important;
+  }
+
+  /* Larger touch targets */
+  button,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Extra small devices (phones in portrait, less than 576px) */
+@media (max-width: 576px) {
+  .card {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  /* Stack elements vertically on small screens */
+  .stats-grid,
+  .participants-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+}
+
+/* iPhone SE and smaller */
+@media (max-width: 375px) {
+  .card {
+    padding: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  .app-container {
+    padding: 0.5rem;
+  }
+
+  .card {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+}
+
+/* PWA - Standalone mode (when installed on home screen) */
+@media (display-mode: standalone) {
+  body {
+    /* Add safe area insets for notch devices (iPhone X+) */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Hide browser-specific UI when installed */
+  .install-prompt {
+    display: none;
+  }
+}
+
+/* Dark mode support (respects system preference) */
+@media (prefers-color-scheme: dark) {
+  /* Already dark by default, but can add overrides here */
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode for accessibility */
+@media (prefers-contrast: high) {
+  .card {
+    border-width: 3px;
+  }
+
+  .btn {
+    border-width: 2px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  .btn:hover {
+    transform: none;
+  }
+
+  /* Larger tap targets */
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Prevent text selection on interactive elements (mobile) */
+@media (pointer: coarse) {
+  button,
+  .btn,
+  .card {
+    -webkit-tap-highlight-color: rgba(112, 67, 255, 0.2);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input,
+  textarea {
+    -webkit-user-select: text;
+    user-select: text;
   }
 }
