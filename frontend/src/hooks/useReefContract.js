@@ -306,7 +306,10 @@ export const useReefContract = () => {
 
     try {
       const roundNumber = await contract.roundNumber();
+      console.log('📋 Fetching participants for round:', roundNumber.toString());
+
       const participantAddresses = await contract.getRoundParticipants(roundNumber);
+      console.log('👥 Participant addresses:', participantAddresses);
 
       const participantsData = await Promise.all(
         participantAddresses.map(async (address) => {
@@ -314,6 +317,8 @@ export const useReefContract = () => {
           const amount = parseFloat(formatReef(burnedAmount));
           const bonus = calculateBonus(amount);
           const tickets = calculateTickets(amount);
+
+          console.log(`💰 ${address}: ${amount} REEF, ${tickets} tickets`);
 
           return {
             address,
@@ -324,9 +329,10 @@ export const useReefContract = () => {
         })
       );
 
+      console.log('✅ Total participants found:', participantsData.length);
       setParticipants(participantsData);
     } catch (error) {
-      console.error('Error fetching participants:', error);
+      console.error('❌ Error fetching participants:', error);
     }
   }, [contract]);
 
