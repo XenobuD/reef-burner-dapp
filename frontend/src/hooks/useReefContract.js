@@ -201,7 +201,7 @@ export const useReefContract = () => {
 
       setAccount(evmAddress);
 
-      // Initialize contract with the signer
+      // Initialize contract with the signer (for write operations)
       if (CONTRACT_ADDRESS) {
         console.log('📄 Initializing contract at:', CONTRACT_ADDRESS);
         const contractInstance = new ethers.Contract(
@@ -209,8 +209,20 @@ export const useReefContract = () => {
           ReefBurnerABI.abi,
           signer
         );
-        setContract(contractInstance);
-        console.log('✅ Contract initialized with signer!');
+
+        // CRITICAL FIX: For view functions, we need to use Provider not Signer
+        // Create a read-only contract instance using Provider
+        const readOnlyContract = new ethers.Contract(
+          CONTRACT_ADDRESS,
+          ReefBurnerABI.abi,
+          reefProvider
+        );
+
+        // Attach the read-only instance for view calls
+        contractInstance.connect(readOnlyContract.provider);
+
+        setContract(readOnlyContract); // Use read-only for view functions
+        console.log('✅ Contract initialized with provider for view calls!');
       } else {
         console.warn('⚠️ No contract address set!');
       }
