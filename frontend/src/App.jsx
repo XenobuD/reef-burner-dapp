@@ -68,17 +68,21 @@ function App() {
 
     try {
       setIsBurning(true);
+      console.log('🔥 App: Starting burn for', burnAmount, 'REEF');
+
       await burnTokens(burnAmount);
+
+      console.log('🎉 App: Burn completed!');
       setBurnAmount('5'); // Reset to minimum (testing mode: 5 REEF)
-      alert('✅ Burn successful! You are now entered in the lottery.');
+      alert('✅ Burn successful! Transaction confirmed on blockchain.\n\nYou are now entered in the lottery! 🎲');
     } catch (error) {
-      console.error('Burn failed:', error);
+      console.error('❌ App: Burn failed:', error);
 
       // User-friendly error messages
       let errorMsg = '❌ Burn failed!\n\n';
       if (error.message.includes('insufficient funds')) {
         errorMsg += 'Insufficient REEF balance. Make sure you have enough REEF to cover the burn amount + gas fees.';
-      } else if (error.message.includes('user rejected')) {
+      } else if (error.message.includes('user rejected') || error.message.includes('rejected')) {
         errorMsg += 'Transaction was rejected in your wallet.';
       } else if (error.message.includes('Max participants')) {
         errorMsg += 'Maximum participants reached for this round. Please wait for the next round.';

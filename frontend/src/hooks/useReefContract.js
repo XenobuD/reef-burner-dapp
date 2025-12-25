@@ -381,21 +381,28 @@ export const useReefContract = () => {
     }
 
     try {
+      console.log('🔥 Starting burn process...');
+      console.log('Amount:', amount, 'REEF');
+
       const weiAmount = parseReef(amount);
+      console.log('Wei amount:', weiAmount.toString());
 
       // Call burn function
+      console.log('📤 Sending transaction to contract...');
       const tx = await contract.burn({
         value: weiAmount,
         gasLimit: 500000 // Adjust as needed
       });
 
-      console.log('Transaction sent:', tx.hash);
+      console.log('✅ Transaction sent! Hash:', tx.hash);
+      console.log('⏳ Waiting for confirmation...');
 
       // Wait for confirmation
       const receipt = await tx.wait();
-      console.log('Transaction confirmed:', receipt);
+      console.log('✅ Transaction confirmed!', receipt);
 
       // Refresh data
+      console.log('🔄 Refreshing contract data...');
       await Promise.all([
         fetchStatistics(),
         fetchParticipants(),
@@ -403,9 +410,15 @@ export const useReefContract = () => {
         fetchTimeRemaining()
       ]);
 
+      console.log('🎉 Burn completed successfully!');
       return receipt;
     } catch (error) {
-      console.error('Error burning tokens:', error);
+      console.error('❌ Error burning tokens:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        data: error.data
+      });
       throw error;
     }
   };
