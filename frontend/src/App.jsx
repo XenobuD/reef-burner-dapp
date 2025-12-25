@@ -436,38 +436,46 @@ function App() {
                 color: 'var(--reef-pink)',
                 marginBottom: '0.5rem'
               }}>
-                Lottery Triggering Automatically...
+                Round Ended - Ready to Draw Winner!
               </p>
               <p style={{
                 fontSize: '0.9rem',
-                color: 'var(--text-secondary)'
+                color: 'var(--text-secondary)',
+                marginBottom: '1rem'
               }}>
-                Winner will be selected and prize sent automatically!
+                Click the button below to trigger the lottery
               </p>
-            </motion.div>
 
-            {/* Manual trigger option */}
-            {account && (
-              <div style={{ marginTop: '1.5rem' }}>
+              {/* Manual trigger button */}
+              {account && (
                 <motion.button
-                  className="btn"
+                  className="btn btn-primary"
                   onClick={handleTriggerLottery}
                   disabled={isTriggering}
                   whileHover={!isTriggering ? { scale: 1.05 } : {}}
                   whileTap={!isTriggering ? { scale: 0.95 } : {}}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid var(--card-border)',
-                    padding: '0.8rem 1.5rem',
-                    fontSize: '0.9rem',
-                    opacity: isTriggering ? 0.5 : 0.7,
-                    cursor: isTriggering ? 'not-allowed' : 'pointer'
+                    padding: '1rem 2rem',
+                    fontSize: '1.1rem',
+                    fontWeight: '600',
+                    cursor: isTriggering ? 'not-allowed' : 'pointer',
+                    opacity: isTriggering ? 0.7 : 1
                   }}
                 >
-                  {isTriggering ? '🔄 Triggering...' : 'Or trigger manually'}
+                  {isTriggering ? '🔄 Triggering Lottery...' : '🎲 Trigger Lottery Now'}
                 </motion.button>
-              </div>
-            )}
+              )}
+
+              {!account && (
+                <p style={{
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.9rem',
+                  marginTop: '1rem'
+                }}>
+                  Connect wallet to trigger the lottery
+                </p>
+              )}
+            </motion.div>
           </motion.div>
         )}
 
