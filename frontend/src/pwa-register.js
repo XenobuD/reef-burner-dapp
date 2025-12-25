@@ -2,6 +2,20 @@
 // Built by XenobuD
 
 export function registerServiceWorker() {
+  // TEMPORARILY DISABLED - Service Worker causing cache issues
+  console.log('⚠️ PWA: Service Worker DISABLED for debugging');
+
+  // Unregister any existing service workers
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      registrations.forEach((registration) => {
+        registration.unregister();
+        console.log('🗑️ PWA: Unregistered old service worker');
+      });
+    });
+  }
+
+  /* ORIGINAL CODE - RE-ENABLE AFTER TESTING
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
@@ -19,6 +33,7 @@ export function registerServiceWorker() {
         });
     });
   }
+  */
 }
 
 // Install prompt for "Add to Home Screen"
