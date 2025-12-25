@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { Provider } from '@reef-defi/evm-provider';
+import { WsProvider } from '@polkadot/api';
 import { formatReef, parseReef, calculateBonus, calculateTickets } from '../utils/helpers';
 
 // Import contract ABI (you'll need to copy this from the compiled contract)
@@ -56,13 +57,22 @@ export const useReefContract = () => {
         return null;
       }
 
-      const provider = new Provider({
-        provider: window.injectedWeb3['reef']
+      console.log('📡 Connecting to Reef RPC:', MAINNET_RPC);
+
+      // Create WebSocket provider for Reef Chain
+      const wsProvider = new WsProvider(MAINNET_RPC);
+
+      // Create Reef Provider with the WebSocket provider
+      const reefProvider = new Provider({
+        provider: wsProvider
       });
 
-      await provider.api.isReady;
-      setProvider(provider);
-      return provider;
+      console.log('⏳ Waiting for API to be ready...');
+      await reefProvider.api.isReady;
+      console.log('✅ Reef API ready!');
+
+      setProvider(reefProvider);
+      return reefProvider;
     } catch (error) {
       console.error('Error initializing provider:', error);
       return null;
