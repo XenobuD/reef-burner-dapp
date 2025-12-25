@@ -15,7 +15,7 @@ const Header = ({ account, connectWallet, switchAccount, disconnectWallet, avail
       animate={{ y: 0 }}
       transition={{ duration: 0.5, type: 'spring', stiffness: 100 }}
       style={{
-        padding: '1.5rem 3rem',
+        padding: '1rem 1.5rem',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -24,7 +24,9 @@ const Header = ({ account, connectWallet, switchAccount, disconnectWallet, avail
         backgroundColor: 'rgba(26, 31, 58, 0.8)',
         position: 'sticky',
         top: 0,
-        zIndex: 100
+        zIndex: 100,
+        flexWrap: 'wrap',
+        gap: '1rem'
       }}
     >
       {/* Logo */}
@@ -32,40 +34,47 @@ const Header = ({ account, connectWallet, switchAccount, disconnectWallet, avail
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '2rem'
+          gap: '0.5rem',
+          flex: '1 1 auto',
+          minWidth: '0'
         }}
         whileHover={{ scale: 1.05 }}
       >
         <div style={{
-          fontSize: '2rem',
+          fontSize: 'clamp(1.2rem, 5vw, 2rem)',
           fontWeight: '900',
           background: 'linear-gradient(135deg, var(--reef-purple) 0%, var(--reef-pink) 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text'
+          backgroundClip: 'text',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
         }}>
           🔥 REEF BURNER
         </div>
-
-        {/* About Button */}
-        <motion.button
-          className="btn"
-          onClick={onAboutClick}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          style={{
-            background: 'rgba(112, 67, 255, 0.1)',
-            border: '1px solid var(--reef-purple)',
-            padding: '0.6rem 1.2rem',
-            fontSize: '0.9rem'
-          }}
-        >
-          📖 About / Instructions
-        </motion.button>
       </motion.div>
 
+      {/* About Button - Mobile responsive */}
+      <motion.button
+        className="btn"
+        onClick={onAboutClick}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        style={{
+          background: 'rgba(112, 67, 255, 0.1)',
+          border: '1px solid var(--reef-purple)',
+          padding: '0.5rem 0.8rem',
+          fontSize: 'clamp(0.75rem, 2vw, 0.9rem)',
+          whiteSpace: 'nowrap'
+        }}
+      >
+        <span style={{ display: 'inline' }}>📖</span>
+        <span style={{ display: 'inline', marginLeft: '0.3rem' }}>About</span>
+      </motion.button>
+
       {/* Wallet Connect Button */}
-      <div>
+      <div style={{ flex: '0 0 auto' }}>
         {!account ? (
           <motion.button
             className="btn btn-primary"
@@ -74,10 +83,13 @@ const Header = ({ account, connectWallet, switchAccount, disconnectWallet, avail
             whileTap={{ scale: 0.95 }}
             style={{
               position: 'relative',
-              zIndex: 1
+              zIndex: 1,
+              padding: '0.6rem 1rem',
+              fontSize: 'clamp(0.8rem, 2vw, 1rem)',
+              whiteSpace: 'nowrap'
             }}
           >
-            🌊 Connect Wallet
+            🌊 Connect
           </motion.button>
         ) : (
           <motion.div
@@ -198,7 +210,10 @@ const Header = ({ account, connectWallet, switchAccount, disconnectWallet, avail
               style={{
                 background: 'rgba(255, 67, 67, 0.1)',
                 color: 'var(--danger)',
-                border: '1px solid var(--danger)'
+                border: '1px solid var(--danger)',
+                padding: '0.6rem 1rem',
+                fontSize: 'clamp(0.75rem, 2vw, 0.9rem)',
+                whiteSpace: 'nowrap'
               }}
             >
               Disconnect
