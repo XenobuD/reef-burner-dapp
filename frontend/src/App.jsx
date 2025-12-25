@@ -155,12 +155,19 @@ function App() {
               disabled={isTriggering}
               whileHover={!isTriggering ? { scale: 1.05 } : {}}
               whileTap={!isTriggering ? { scale: 0.95 } : {}}
+              animate={!isTriggering ? {
+                boxShadow: [
+                  '0 8px 32px rgba(255, 67, 185, 0.4)',
+                  '0 12px 48px rgba(255, 67, 185, 0.6)',
+                  '0 8px 32px rgba(255, 67, 185, 0.4)'
+                ]
+              } : {}}
+              transition={{ duration: 1.5, repeat: Infinity }}
               style={{
                 fontSize: '1.2rem',
                 padding: '1.2rem 3rem',
                 background: 'linear-gradient(135deg, #FF43B9, #7043FF)',
                 border: '2px solid var(--reef-pink)',
-                boxShadow: '0 8px 32px rgba(255, 67, 185, 0.4)',
                 opacity: isTriggering ? 0.6 : 1,
                 cursor: isTriggering ? 'not-allowed' : 'pointer'
               }}
@@ -174,7 +181,7 @@ function App() {
                   🔄
                 </motion.div>
               ) : (
-                '🎲 TRIGGER LOTTERY & SELECT WINNER 🎲'
+                '🎲 TRIGGER THE LOTTERY 🎲'
               )}
             </motion.button>
             <p style={{
@@ -182,7 +189,7 @@ function App() {
               color: 'var(--text-secondary)',
               fontSize: '0.9rem'
             }}>
-              ⏰ Round ended! Click to select the winner and start a new round.
+              ⏰ Round ended! Anyone can trigger.
             </p>
           </motion.div>
         )}

@@ -435,16 +435,34 @@ export const useReefContract = () => {
 
     fetchAllData();
 
-    // Refresh every 30 seconds
+    // Refresh every 10 seconds (more frequent to catch round end quickly)
     const interval = setInterval(() => {
       fetchAllData();
-    }, 30000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [contract, fetchAllData]);
 
+  // Countdown timer - updates every second for smooth countdown
+  useEffect(() => {
+    if (timeRemaining <= 0) return;
+
+    const countdown = setInterval(() => {
+      setTimeRemaining(prev => {
+        const newTime = prev - 1;
+        // When countdown reaches 0, trigger a full data refresh
+        if (newTime <= 0) {
+          fetchAllData();
+        }
+        return Math.max(0, newTime);
+      });
+    }, 1000);
+
+    return () => clearInterval(countdown);
+  }, [timeRemaining, fetchAllData]);
+
   // Note: Reef Provider doesn't support .on() for contract events
-  // We'll rely on auto-refresh (every 30 seconds) instead
+  // We use auto-refresh (every 10 seconds) + countdown timer (every 1 second) instead
 
   return {
     account,
