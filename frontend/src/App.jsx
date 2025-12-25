@@ -38,6 +38,14 @@ function App() {
   const [isTriggering, setIsTriggering] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
 
+  // Check URL parameters to auto-open About modal
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('about') === 'true') {
+      setShowAboutModal(true);
+    }
+  }, []);
+
   const handleBurn = async () => {
     if (!account || !burnAmount) return;
 

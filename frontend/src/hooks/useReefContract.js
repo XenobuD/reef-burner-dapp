@@ -108,19 +108,19 @@ export const useReefContract = () => {
             // If still here, show instructions
             const userChoice = confirm(
               '📱 Open in Reef Wallet App?\n\n' +
-              'Click OK to open Reef Wallet app, or Cancel for manual instructions.'
+              'Click OK to open Reef Wallet app, or Cancel for instructions.'
             );
 
             if (!userChoice) {
-              alert('📱 Manual Instructions:\n\n' +
+              alert('📱 How to Connect on Mobile:\n\n' +
                     '1. Download Reef Wallet app:\n' +
-                    '   • Google Play (Android)\n' +
+                    '   • Google Play Store (Android)\n' +
                     '   • App Store (iOS)\n\n' +
                     '2. Open Reef Wallet app\n' +
-                    '3. Look for DApp Browser or Browser\n' +
-                    '4. Visit: reef-burner-dapp.vercel.app\n' +
-                    '5. Connect your wallet\n\n' +
-                    'Or use MetaMask Mobile as alternative!');
+                    '3. Look for DApp Browser or Browser icon\n' +
+                    '4. Enter URL: reef-burner-dapp.vercel.app\n' +
+                    '5. Connect your wallet in the app browser\n\n' +
+                    'Alternative: Use MetaMask Mobile browser');
             }
           }, 1500);
         } else {
