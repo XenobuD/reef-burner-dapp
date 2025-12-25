@@ -18,6 +18,7 @@ export const useReefContract = () => {
   const [provider, setProvider] = useState(null);
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [availableAccounts, setAvailableAccounts] = useState([]); // All available wallet accounts
   const [statistics, setStatistics] = useState({
     totalParticipants: 0,
     totalWinners: 0,
@@ -119,9 +120,13 @@ export const useReefContract = () => {
         throw new Error('No accounts found in Reef Wallet. Please create an account first.');
       }
 
-      // Select the first account
+      // Store all available accounts
+      setAvailableAccounts(allAccounts);
+
+      // Select the first account by default
       const selectedAccount = allAccounts[0];
       console.log('👤 Selected account:', selectedAccount);
+      console.log(`📊 Total accounts available: ${allAccounts.length}`);
 
       // Get the injector (signer) for this account
       console.log('🔐 Getting injector for account...');
@@ -175,11 +180,65 @@ export const useReefContract = () => {
     }
   };
 
+  // Switch to different account
+  const switchAccount = async (accountAddress) => {
+    try {
+      console.log('🔄 Switching to account:', accountAddress);
+      setLoading(true);
+
+      if (!provider) {
+        throw new Error('Provider not initialized');
+      }
+
+      // Find the selected account
+      const selectedAccount = availableAccounts.find(acc => acc.address === accountAddress);
+      if (!selectedAccount) {
+        throw new Error('Account not found');
+      }
+
+      // Get injector for the new account
+      const injector = await web3FromAddress(selectedAccount.address);
+
+      // Create new signer
+      const signer = new Signer(
+        provider,
+        selectedAccount.address,
+        injector.signer
+      );
+
+      // Get EVM address
+      const evmAddress = await signer.getAddress();
+      console.log('✅ Switched to EVM address:', evmAddress);
+
+      setAccount(evmAddress);
+
+      // Re-initialize contract with new signer
+      if (CONTRACT_ADDRESS) {
+        const contractInstance = new ethers.Contract(
+          CONTRACT_ADDRESS,
+          ReefBurnerABI.abi,
+          signer
+        );
+        setContract(contractInstance);
+        console.log('✅ Contract re-initialized with new account!');
+      }
+
+      setLoading(false);
+      return evmAddress;
+    } catch (error) {
+      console.error('❌ Error switching account:', error);
+      alert('Failed to switch account: ' + error.message);
+      setLoading(false);
+      throw error;
+    }
+  };
+
   // Disconnect wallet
   const disconnectWallet = () => {
     setAccount(null);
     setProvider(null);
     setContract(null);
+    setAvailableAccounts([]);
   };
 
   // Fetch statistics
@@ -351,12 +410,14 @@ export const useReefContract = () => {
     provider,
     contract,
     connectWallet,
+    switchAccount,
     disconnectWallet,
     burnTokens,
     statistics,
     participants,
     winners,
     timeRemaining,
-    loading
+    loading,
+    availableAccounts
   };
 };

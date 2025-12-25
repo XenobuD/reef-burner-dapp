@@ -25,19 +25,19 @@ const BurnCard = ({
       creator: (amount * 0.08).toFixed(2)
     });
 
-    // Calculate bonus percentage
-    if (amount >= 1500) {
+    // Calculate bonus percentage (TESTING MODE: 5-8 REEF)
+    if (amount >= 8) {
       setBonusPercent(3);
-    } else if (amount >= 1200) {
+    } else if (amount >= 7) {
       setBonusPercent(2);
-    } else if (amount >= 1050) {
+    } else if (amount >= 6) {
       setBonusPercent(1);
     } else {
       setBonusPercent(0);
     }
   }, [burnAmount]);
 
-  const isValid = parseFloat(burnAmount) >= 950 && parseFloat(burnAmount) <= 1500;
+  const isValid = parseFloat(burnAmount) >= 5 && parseFloat(burnAmount) <= 8;
 
   return (
     <motion.div
@@ -94,10 +94,10 @@ const BurnCard = ({
               className="input"
               value={burnAmount}
               onChange={(e) => setBurnAmount(e.target.value)}
-              min="950"
-              max="1500"
-              step="50"
-              placeholder="950 - 1500 REEF"
+              min="5"
+              max="8"
+              step="0.1"
+              placeholder="5 - 8 REEF"
             />
             <div style={{
               display: 'flex',
@@ -106,8 +106,8 @@ const BurnCard = ({
               fontSize: '0.8rem',
               color: 'var(--text-secondary)'
             }}>
-              <span>Min: 950 REEF</span>
-              <span>Max: 1,500 REEF</span>
+              <span>Min: 5 REEF</span>
+              <span>Max: 8 REEF</span>
             </div>
           </div>
 
@@ -118,7 +118,7 @@ const BurnCard = ({
             gap: '0.5rem',
             marginBottom: '1.5rem'
           }}>
-            {[950, 1050, 1200, 1500].map((amount) => (
+            {[5, 6, 7, 8].map((amount) => (
               <motion.button
                 key={amount}
                 className="btn"
@@ -242,7 +242,7 @@ const BurnCard = ({
                 color: 'var(--danger)'
               }}
             >
-              ⚠️ Amount must be between 950 and 1,500 REEF
+              ⚠️ Amount must be between 5 and 8 REEF
             </motion.div>
           )}
         </div>

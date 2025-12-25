@@ -20,13 +20,15 @@ function App() {
   const {
     account,
     connectWallet,
+    switchAccount,
     disconnectWallet,
     burnTokens,
     statistics,
     participants,
     winners,
     timeRemaining,
-    loading
+    loading,
+    availableAccounts
   } = contractHook();
 
   const [burnAmount, setBurnAmount] = useState('5'); // Testing mode: 5-8 REEF
@@ -53,7 +55,9 @@ function App() {
       <Header
         account={account}
         connectWallet={connectWallet}
+        switchAccount={switchAccount}
         disconnectWallet={disconnectWallet}
+        availableAccounts={availableAccounts}
       />
 
       <main style={{
