@@ -143,43 +143,40 @@ export const useReefContract = () => {
         throw new Error('Failed to initialize Reef Provider');
       }
 
-      // Use Polkadot extension API to connect to Reef Wallet
-      console.log('📢 Enabling Polkadot extensions...');
-      const extensions = await web3Enable('Reef Burner dApp');
-      console.log('✅ Extensions enabled:', extensions);
+      // Enable Reef Wallet specifically
+      console.log('📢 Enabling Reef Wallet...');
+      const reefExtension = window.injectedWeb3['reef'];
+      await reefExtension.enable('Reef Burner dApp');
+      console.log('✅ Reef Wallet enabled');
 
-      if (extensions.length === 0) {
-        throw new Error('No Polkadot extension found. Please install Reef Wallet.');
-      }
-
-      // Get all accounts from Reef Wallet
-      console.log('📋 Getting accounts...');
-      const allAccounts = await web3Accounts();
+      // Get accounts directly from Reef extension
+      console.log('📋 Getting accounts from Reef Wallet...');
+      const allAccounts = await reefExtension.accounts.get();
       console.log('✅ Found accounts:', allAccounts);
 
-      if (allAccounts.length === 0) {
+      if (!allAccounts || allAccounts.length === 0) {
         throw new Error('No accounts found in Reef Wallet. Please create an account first.');
       }
 
-      // Store all available accounts
-      setAvailableAccounts(allAccounts);
+      // Store all available accounts in compatible format
+      const formattedAccounts = allAccounts.map(acc => ({
+        address: acc.address,
+        name: acc.name || 'Reef Account',
+        source: 'reef'
+      }));
+      setAvailableAccounts(formattedAccounts);
 
       // Select the first account by default
       const selectedAccount = allAccounts[0];
       console.log('👤 Selected account:', selectedAccount);
       console.log(`📊 Total accounts available: ${allAccounts.length}`);
 
-      // Get the injector (signer) for this account
-      console.log('🔐 Getting injector for account...');
-      const injector = await web3FromAddress(selectedAccount.address);
-      console.log('✅ Got injector:', injector);
-
-      // Create Reef Signer using the account address and injector
-      console.log('🔐 Creating Reef Signer...');
+      // Create Reef Signer using the Reef extension's signer
+      console.log('🔐 Creating Reef Signer with extension signer...');
       const signer = new Signer(
         reefProvider,
         selectedAccount.address,
-        injector.signer
+        reefExtension.signer
       );
 
       // Check if account is claimed (has EVM address)
@@ -231,20 +228,24 @@ export const useReefContract = () => {
         throw new Error('Provider not initialized');
       }
 
+      // Get Reef extension
+      const reefExtension = window.injectedWeb3['reef'];
+      if (!reefExtension) {
+        throw new Error('Reef Wallet not found');
+      }
+
       // Find the selected account
       const selectedAccount = availableAccounts.find(acc => acc.address === accountAddress);
       if (!selectedAccount) {
         throw new Error('Account not found');
       }
 
-      // Get injector for the new account
-      const injector = await web3FromAddress(selectedAccount.address);
-
-      // Create new signer
+      // Create new signer with Reef extension
+      console.log('🔐 Creating signer for new account...');
       const signer = new Signer(
         provider,
         selectedAccount.address,
-        injector.signer
+        reefExtension.signer
       );
 
       // Get EVM address
