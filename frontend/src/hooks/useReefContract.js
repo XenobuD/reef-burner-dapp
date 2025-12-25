@@ -16,7 +16,8 @@ const MAINNET_RPC = import.meta.env.VITE_MAINNET_RPC || 'wss://rpc.reefscan.com/
 export const useReefContract = () => {
   const [account, setAccount] = useState(null);
   const [provider, setProvider] = useState(null);
-  const [contract, setContract] = useState(null);
+  const [contract, setContract] = useState(null); // Write contract (with Signer)
+  const [readContract, setReadContract] = useState(null); // Read contract (with Provider)
   const [loading, setLoading] = useState(true);
   const [availableAccounts, setAvailableAccounts] = useState([]); // All available wallet accounts
   const [statistics, setStatistics] = useState({
@@ -201,28 +202,27 @@ export const useReefContract = () => {
 
       setAccount(evmAddress);
 
-      // Initialize contract with the signer (for write operations)
+      // DUAL CONTRACT ARCHITECTURE: Maintain separate instances for read/write
       if (CONTRACT_ADDRESS) {
-        console.log('📄 Initializing contract at:', CONTRACT_ADDRESS);
-        const contractInstance = new ethers.Contract(
-          CONTRACT_ADDRESS,
-          ReefBurnerABI.abi,
-          signer
-        );
+        console.log('📄 Initializing dual contracts at:', CONTRACT_ADDRESS);
 
-        // CRITICAL FIX: For view functions, we need to use Provider not Signer
-        // Create a read-only contract instance using Provider
+        // READ CONTRACT: Provider-based for view functions (no gas, works reliably)
         const readOnlyContract = new ethers.Contract(
           CONTRACT_ADDRESS,
           ReefBurnerABI.abi,
           reefProvider
         );
+        setReadContract(readOnlyContract);
+        console.log('✅ Read contract initialized with Provider!');
 
-        // Attach the read-only instance for view calls
-        contractInstance.connect(readOnlyContract.provider);
-
-        setContract(readOnlyContract); // Use read-only for view functions
-        console.log('✅ Contract initialized with provider for view calls!');
+        // WRITE CONTRACT: Signer-based for transactions (burns, triggers)
+        const writeContract = new ethers.Contract(
+          CONTRACT_ADDRESS,
+          ReefBurnerABI.abi,
+          signer
+        );
+        setContract(writeContract);
+        console.log('✅ Write contract initialized with Signer!');
       } else {
         console.warn('⚠️ No contract address set!');
       }
@@ -270,15 +270,16 @@ export const useReefContract = () => {
 
       setAccount(evmAddress);
 
-      // Re-initialize contract with new signer
+      // Re-initialize WRITE contract with new signer (READ contract stays with Provider)
       if (CONTRACT_ADDRESS) {
-        const contractInstance = new ethers.Contract(
+        const writeContract = new ethers.Contract(
           CONTRACT_ADDRESS,
           ReefBurnerABI.abi,
           signer
         );
-        setContract(contractInstance);
-        console.log('✅ Contract re-initialized with new account!');
+        setContract(writeContract);
+        console.log('✅ Write contract re-initialized with new account!');
+        // Note: readContract doesn't need re-init, it uses Provider not Signer
       }
 
       setLoading(false);
@@ -296,15 +297,16 @@ export const useReefContract = () => {
     setAccount(null);
     setProvider(null);
     setContract(null);
+    setReadContract(null);
     setAvailableAccounts([]);
   };
 
-  // Fetch statistics
+  // Fetch statistics (VIEW FUNCTION - uses readContract)
   const fetchStatistics = useCallback(async () => {
-    if (!contract) return;
+    if (!readContract) return;
 
     try {
-      const stats = await contract.getStatistics();
+      const stats = await readContract.getStatistics();
       setStatistics({
         totalParticipants: stats.participants.toNumber(),
         totalWinners: stats.winnersCount.toNumber(),
@@ -313,24 +315,24 @@ export const useReefContract = () => {
         currentRoundParticipants: stats.currentRoundParticipantsCount.toNumber()
       });
     } catch (error) {
-      console.error('Error fetching statistics:', error);
+      console.error('❌ Error fetching statistics:', error);
     }
-  }, [contract]);
+  }, [readContract]);
 
-  // Fetch participants
+  // Fetch participants (VIEW FUNCTION - uses readContract)
   const fetchParticipants = useCallback(async () => {
-    if (!contract) return;
+    if (!readContract) return;
 
     try {
-      const roundNumber = await contract.roundNumber();
+      const roundNumber = await readContract.roundNumber();
       console.log('📋 Fetching participants for round:', roundNumber.toString());
 
-      const participantAddresses = await contract.getRoundParticipants(roundNumber);
+      const participantAddresses = await readContract.getRoundParticipants(roundNumber);
       console.log('👥 Participant addresses:', participantAddresses);
 
       const participantsData = await Promise.all(
         participantAddresses.map(async (address) => {
-          const burnedAmount = await contract.userBurnedInRound(roundNumber, address);
+          const burnedAmount = await readContract.userBurnedInRound(roundNumber, address);
           const amount = parseFloat(formatReef(burnedAmount));
           const bonus = calculateBonus(amount);
           const tickets = calculateTickets(amount);
@@ -351,14 +353,14 @@ export const useReefContract = () => {
     } catch (error) {
       console.error('❌ Error fetching participants:', error);
     }
-  }, [contract]);
+  }, [readContract]);
 
-  // Fetch winners
+  // Fetch winners (VIEW FUNCTION - uses readContract)
   const fetchWinners = useCallback(async () => {
-    if (!contract) return;
+    if (!readContract) return;
 
     try {
-      const winnersCount = await contract.getWinnersCount();
+      const winnersCount = await readContract.getWinnersCount();
       const count = winnersCount.toNumber();
 
       if (count === 0) {
@@ -369,7 +371,7 @@ export const useReefContract = () => {
       const winnersData = await Promise.all(
         Array.from({ length: Math.min(count, 10) }, async (_, i) => {
           const index = count - 1 - i; // Get latest winners first
-          const winner = await contract.getWinner(index);
+          const winner = await readContract.getWinner(index);
           return {
             winnerAddress: winner.winnerAddress,
             prizeAmount: formatReef(winner.prizeAmount),
@@ -381,37 +383,37 @@ export const useReefContract = () => {
 
       setWinners(winnersData);
     } catch (error) {
-      console.error('Error fetching winners:', error);
+      console.error('❌ Error fetching winners:', error);
     }
-  }, [contract]);
+  }, [readContract]);
 
-  // Fetch time remaining
+  // Fetch time remaining (VIEW FUNCTION - uses readContract)
   const fetchTimeRemaining = useCallback(async () => {
-    if (!contract) return;
+    if (!readContract) return;
 
     try {
-      const remaining = await contract.getTimeRemainingInRound();
+      const remaining = await readContract.getTimeRemainingInRound();
       setTimeRemaining(remaining.toNumber());
     } catch (error) {
-      console.error('Error fetching time remaining:', error);
+      console.error('❌ Error fetching time remaining:', error);
     }
-  }, [contract]);
+  }, [readContract]);
 
-  // Fetch randomness status
+  // Fetch randomness status (VIEW FUNCTION - uses readContract)
   const fetchRandomnessStatus = useCallback(async () => {
-    if (!contract) return;
+    if (!readContract) return;
 
     try {
-      const status = await contract.getRandomnessStatus();
+      const status = await readContract.getRandomnessStatus();
       setRandomnessStatus({
         committed: status.committed,
         commitBlock: status.commitBlock.toNumber(),
         blocksUntilReveal: status.blocksUntilReveal.toNumber()
       });
     } catch (error) {
-      console.error('Error fetching randomness status:', error);
+      console.error('❌ Error fetching randomness status:', error);
     }
-  }, [contract]);
+  }, [readContract]);
 
   // Burn tokens
   const burnTokens = async (amount) => {
@@ -507,9 +509,9 @@ export const useReefContract = () => {
     }
   };
 
-  // Fetch all data
+  // Fetch all data (all VIEW functions use readContract)
   const fetchAllData = useCallback(async () => {
-    if (!contract) return;
+    if (!readContract) return;
 
     setLoading(true);
     try {
@@ -521,15 +523,15 @@ export const useReefContract = () => {
         fetchRandomnessStatus()
       ]);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('❌ Error fetching data:', error);
     } finally {
       setLoading(false);
     }
-  }, [contract, fetchStatistics, fetchParticipants, fetchWinners, fetchTimeRemaining, fetchRandomnessStatus]);
+  }, [readContract, fetchStatistics, fetchParticipants, fetchWinners, fetchTimeRemaining, fetchRandomnessStatus]);
 
-  // Auto-refresh data
+  // Auto-refresh data (triggers when readContract is available)
   useEffect(() => {
-    if (!contract) return;
+    if (!readContract) return;
 
     fetchAllData();
 
@@ -539,7 +541,7 @@ export const useReefContract = () => {
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [contract, fetchAllData]);
+  }, [readContract, fetchAllData]);
 
   // Countdown timer - updates every second for smooth countdown
   useEffect(() => {
