@@ -225,6 +225,6 @@ Ajută-ne să testăm:
 ---
 
 *Facem REEF mai rar, câte un burn odată 🔥*
-*Construit pentru comunitate, de către comunitate* 💜
+*Construit pentru comunitate, de către XenobuD* 💜
 
 #ReefChain #REEF #DeFi #Burn2Earn

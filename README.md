@@ -402,3 +402,7 @@ Learn more: [reef.io](https://reef.io)
 ---
 
 **Ready to burn some REEF? Let's create deflation together! 🔥**
+
+---
+
+*Built by XenobuD for the Reef Community* 💜

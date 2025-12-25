@@ -225,6 +225,6 @@ Help us test:
 ---
 
 *Making REEF more scarce, one burn at a time 🔥*
-*Built for the community, by the community* 💜
+*Built for the community, by XenobuD* 💜
 
 #ReefChain #REEF #DeFi #Burn2Earn

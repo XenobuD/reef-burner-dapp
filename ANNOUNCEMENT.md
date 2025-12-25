@@ -249,7 +249,7 @@ Check real-time stats on the dApp:
 
 ---
 
-*Built with ❤️ for the Reef Community*
+*Built with ❤️ for the Reef Community by XenobuD*
 *Open Source • Transparent • Verifiable*
 
 ---
