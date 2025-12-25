@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Header = ({ account, connectWallet, switchAccount, disconnectWallet, availableAccounts }) => {
+const Header = ({ account, connectWallet, switchAccount, disconnectWallet, availableAccounts, onAboutClick }) => {
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
   const formatAddress = (address) => {
@@ -32,7 +32,7 @@ const Header = ({ account, connectWallet, switchAccount, disconnectWallet, avail
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '1rem'
+          gap: '2rem'
         }}
         whileHover={{ scale: 1.05 }}
       >
@@ -46,6 +46,22 @@ const Header = ({ account, connectWallet, switchAccount, disconnectWallet, avail
         }}>
           🔥 REEF BURNER
         </div>
+
+        {/* About Button */}
+        <motion.button
+          className="btn"
+          onClick={onAboutClick}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          style={{
+            background: 'rgba(112, 67, 255, 0.1)',
+            border: '1px solid var(--reef-purple)',
+            padding: '0.6rem 1.2rem',
+            fontSize: '0.9rem'
+          }}
+        >
+          📖 About / Instructions
+        </motion.button>
       </motion.div>
 
       {/* Wallet Connect Button */}

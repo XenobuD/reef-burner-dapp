@@ -6,6 +6,7 @@ import BurnCard from './components/BurnCard';
 import ParticipantsList from './components/ParticipantsList';
 import WinnerHistory from './components/WinnerHistory';
 import AnimatedBackground from './components/AnimatedBackground';
+import AboutModal from './components/AboutModal';
 
 // 🔄 TOGGLE BETWEEN MOCK (local demo) AND REAL (blockchain)
 const USE_MOCK = false; // ✅ REAL MODE - connected to Reef Mainnet (TESTING: 5-8 REEF, 1 hour)
@@ -35,6 +36,7 @@ function App() {
   const [burnAmount, setBurnAmount] = useState('5'); // Testing mode: 5-8 REEF
   const [isBurning, setIsBurning] = useState(false);
   const [isTriggering, setIsTriggering] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   const handleBurn = async () => {
     if (!account || !burnAmount) return;
@@ -69,12 +71,18 @@ function App() {
     <div className="app-container">
       <AnimatedBackground />
 
+      <AboutModal
+        isOpen={showAboutModal}
+        onClose={() => setShowAboutModal(false)}
+      />
+
       <Header
         account={account}
         connectWallet={connectWallet}
         switchAccount={switchAccount}
         disconnectWallet={disconnectWallet}
         availableAccounts={availableAccounts}
+        onAboutClick={() => setShowAboutModal(true)}
       />
 
       <main style={{

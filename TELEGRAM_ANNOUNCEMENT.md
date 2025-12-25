@@ -1,230 +1,155 @@
-# 🔥 REEF BURNER - Official Telegram Announcement
+# 🔥 REEF BURNER - Testing Live NOW!
+
+## 🎯 What It Does
+**Burn REEF → Create Deflation → Win Big!**
+
+Every burn:
+• **65% = BURNED FOREVER** (0x000...dEaD)
+• **27% = PRIZE POOL** (winner takes all)
+• **8% = Development**
+
+Weighted lottery: **More burn = Better odds!**
 
 ---
 
-## 🚀 LIVE NOW: REEF BURNER Public Testing!
+## ⚠️ TESTING MODE (1-2 weeks)
+- **Range:** 5-8 REEF per burn
+- **Lottery:** Every 1 hour (not 3 days!)
+- **⚠️ USE TEST WALLET ONLY!**
 
-We're excited to launch **REEF BURNER** on Reef Mainnet for community testing!
+After testing → Production: 950-1,500 REEF, lottery every 3 days
 
+---
+
+## 🔗 Official Links
 **🌐 dApp:** https://reef-burner-dapp.vercel.app/
 **📜 Contract:** `0xFdD061cBE98ef3D1f2a2d7A5e8e14CA57e3baA48`
 **🔍 Verify:** https://reefscan.com/contract/0xFdD061cBE98ef3D1f2a2d7A5e8e14CA57e3baA48
+**💾 GitHub:** https://github.com/XenobuD/reef-burner-dapp
 
 ---
 
-## 🎯 What It Does
-
-**Burn REEF → Create Deflation → Win Prizes!**
-
-Every burn:
-• **65% BURNED FOREVER** (sent to 0x000...dEaD)
-• **27% PRIZE POOL** (winner takes all)
-• **8% DEVELOPMENT** (sustainable funding)
-
-**Weighted lottery:** More you burn = Better odds to win!
-
----
-
-## ⚠️ TESTING PHASE (1-2 Weeks)
-
-**Current Parameters:**
-• Min: **5 REEF** | Max: **8 REEF**
-• Lottery: **Every 1 Hour**
-
-**Testing Duration:** 1-2 weeks based on community feedback
-
-**After successful testing:**
-• Min: **950 REEF** | Max: **1,500 REEF**
-• Lottery: **Every 3 Days**
-• Official Production Launch
-
----
-
-## 🔐 CRITICAL: SECURITY FIRST!
+## 🚨 SECURITY - READ CAREFULLY!
 
 ### ⛔ DO NOT USE YOUR MAIN WALLET!
 
-**Before participating:**
+**How to create test wallet:**
+1. Open **Reef Wallet** → Click **"+"** → **"Create Account"**
+2. Name: **"REEF BURNER TEST"**
+3. Transfer **ONLY 50-100 REEF** from main wallet
+4. Use **ONLY this wallet** for testing!
 
-1. **Create NEW test wallet** in Reef Wallet
-2. **Name it:** "REEF BURNER TEST"
-3. **Transfer ONLY 50-100 REEF** to it
-4. **Use this wallet for testing**
-
-**Why?** Testing phase = bugs possible. Protect your funds!
-
----
-
-## ✅ Verify Legitimacy (Avoid Scams!)
-
-**ONLY trust these:**
-
-✅ **dApp URL:** `reef-burner-dapp.vercel.app`
-✅ **Contract:** `0xFdD061cBE98ef3D1f2a2d7A5e8e14CA57e3baA48`
-✅ **GitHub:** https://github.com/XenobuD/reef-burner-dapp
-
-**RED FLAGS (Scam!):**
-
-❌ Site asks for seed phrase
-❌ Different contract address
-❌ Clone site (similar URL but not exact)
-❌ "Support" asks for private keys
-
-**Always check contract address before connecting!**
+### 🚫 RED FLAGS (SCAM):
+❌ Site asks for seed phrase → **SCAM!**
+❌ Different contract address → **SCAM!**
+❌ Different URL (not vercel.app) → **SCAM!**
 
 ---
 
-## 📖 Quick Start Guide
+## 📖 How to Participate
 
-**1. Create Test Wallet:**
-   • Reef Wallet → "+" → "Create New Account"
-   • Name: "REEF BURNER TEST"
-   • Transfer 50-100 REEF from main wallet
-
-**2. Connect:**
+**1. Connect Wallet**
    • Go to https://reef-burner-dapp.vercel.app/
    • Click "🌊 Connect Wallet"
    • Approve in Reef Wallet
 
-**3. Burn:**
-   • Enter 5-8 REEF
-   • Click "🔥 BURN X REEF 🔥"
-   • **Review transaction carefully**
-   • Approve in Reef Wallet
+**2. Switch to Test Wallet**
+   • Click your address (top-right)
+   • Select test wallet
 
-**4. Verify:**
-   • Check transaction on ReefScan
-   • See your entry in "Current Participants"
-   • View burned REEF at dead address
+**3. Burn REEF**
+   • Choose 5-8 REEF (or click quick buttons)
+   • Click "🔥 BURN X REEF 🔥"
+   • **VERIFY transaction** in popup
+   • Approve
+
+**4. Verify**
+   • See transaction on ReefScan
+   • See yourself in "Current Participants"
+   • See burned REEF at: https://reefscan.com/account/0x000000000000000000000000000000000000dEaD
 
 ---
 
 ## 🎲 How to Win
 
-**Weighted Lottery System:**
-
-| Burn | Bonus | Multiplier |
-|------|-------|------------|
+| Burn | Bonus | Tickets |
+|------|-------|---------|
 | 5 REEF | 0% | 1.00x |
 | 6 REEF | +1% | 1.01x |
 | 7 REEF | +2% | 1.02x |
 | 8 REEF | +3% | 1.03x |
 
-**Every 1 hour:** Contract automatically picks winner
+**Every hour:** Smart contract auto-selects winner
 **Winner gets:** Entire prize pool (27% of all burns)
 **Provably fair:** Based on block hash + weighted random
-
----
-
-## 🔥 Proof of Burn
-
-**How to verify REEF is actually burned:**
-
-1. Go to: https://reefscan.com/account/0x000000000000000000000000000000000000dEaD
-2. See all burned REEF accumulating
-3. **No one** controls this address = Permanent burn!
-
-**Smart contract line 166:**
-```solidity
-address(0x000...dEaD).call{value: burnAmount}
-```
-
-**100% transparent. 100% verifiable.**
 
 ---
 
 ## 🛡️ Why It's Safe
 
 ✅ **Open Source** - Code on GitHub
-✅ **No Admin Keys** - Can't rug pull
-✅ **Immutable** - Contract can't be changed
+✅ **No Admin Keys** - Cannot rug pull
+✅ **Immutable** - Contract cannot be changed
 ✅ **Automated** - No human control
 ✅ **Verifiable** - All burns visible on-chain
-✅ **Wallet Approval** - You confirm every transaction
 
 ---
 
 ## ❓ Quick FAQ
 
 **Q: Can I lose all my REEF?**
-A: Only what you burn. Use test wallet with limited funds!
+A: Only what you burn. That's why use test wallet!
 
 **Q: Is this a scam?**
 A: No! Open source, verifiable on-chain, immutable contract.
 
 **Q: How do I know I'll get paid if I win?**
-A: Smart contract automatically sends prize. No human involved.
-
-**Q: What if there are bugs?**
-A: That's why we're testing! Use test wallet, start small.
+A: Smart contract sends automatically. Zero human intervention.
 
 **Q: When production launch?**
 A: After 1-2 weeks successful testing.
 
 ---
 
-## 🚨 Safety Checklist
+## 🚨 Checklist Before Starting
 
-Before you start, verify:
-
-- [ ] Created **NEW test wallet**
-- [ ] Transferred **only 50-100 REEF** to test wallet
-- [ ] Using **correct URL:** `reef-burner-dapp.vercel.app`
-- [ ] Verified **contract address:** `0xFdD061cBE98ef3D1f2a2d7A5e8e14CA57e3baA48`
-- [ ] **Never** sharing seed phrase with anyone
+- [ ] Created **NEW** test wallet
+- [ ] Transferred **only 50-100 REEF**
+- [ ] Verify URL: `reef-burner-dapp.vercel.app`
+- [ ] Verify contract: `0xFdD061cBE98ef3D1f2a2d7A5e8e14CA57e3baA48`
+- [ ] **NEVER** share seed phrase with anyone
 - [ ] Understand this is **testing phase**
 
 ---
 
-## 💬 Join Testing & Give Feedback!
+## 💬 Feedback & Bug Reports
 
-**We need you to:**
+**Please:**
 • Test the dApp
-• Report bugs
-• Share feedback
+• Report bugs on GitHub Issues
+• Give feedback in group
 • Spread the word (responsibly!)
 
-**Bug reports:** GitHub Issues
-**Discussions:** This Telegram group
-**Updates:** Follow announcements
+**Bug reports:** https://github.com/XenobuD/reef-burner-dapp/issues
 
 ---
 
-## 🎯 Testing Goals
+## 🔥 Start Testing!
 
-Help us test:
-✅ Wallet connection
-✅ Burn transactions
-✅ Lottery winner selection
-✅ Prize distribution
-✅ Statistics accuracy
-✅ UI/UX experience
-
-**Your feedback shapes the final product!**
-
----
-
-## 🔥 Let's Burn Together!
-
-**Start testing now:**
-👉 https://reef-burner-dapp.vercel.app/
+**👉 https://reef-burner-dapp.vercel.app/**
 
 **Remember:**
-1. Test wallet ONLY
-2. Verify contract address
-3. Start with 5 REEF
-4. Report issues
-5. Have fun! 🎉
+1. ⚠️ Test wallet ONLY
+2. ✅ Verify contract address
+3. 💡 Start with 5 REEF
+4. 🐛 Report issues
+5. 🎉 Have fun!
 
 ---
 
-**Questions? Ask below! 👇**
+**Questions? Ask in comments! 👇**
 
-**Found a bug?** → https://github.com/XenobuD/reef-burner-dapp/issues
+*Making REEF more scarce together! 🔥*
+*Built by XenobuD for Reef Community* 💜
 
----
-
-*Making REEF more scarce, one burn at a time 🔥*
-*Built for the community, by XenobuD* 💜
-
-#ReefChain #REEF #DeFi #Burn2Earn
+#ReefChain #REEF #DeFi #TokenBurn #Crypto
