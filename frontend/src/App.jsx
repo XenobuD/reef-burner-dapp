@@ -147,8 +147,8 @@ function App() {
           />
         </motion.div>
 
-        {/* Trigger Lottery Button (shows when round ended) */}
-        {account && timeRemaining <= 0 && (
+        {/* Auto-trigger info (shows when round ended) */}
+        {timeRemaining <= 0 && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -157,48 +157,64 @@ function App() {
               textAlign: 'center'
             }}
           >
-            <motion.button
-              className="btn btn-primary"
-              onClick={handleTriggerLottery}
-              disabled={isTriggering}
-              whileHover={!isTriggering ? { scale: 1.05 } : {}}
-              whileTap={!isTriggering ? { scale: 0.95 } : {}}
-              animate={!isTriggering ? {
-                boxShadow: [
-                  '0 8px 32px rgba(255, 67, 185, 0.4)',
-                  '0 12px 48px rgba(255, 67, 185, 0.6)',
-                  '0 8px 32px rgba(255, 67, 185, 0.4)'
-                ]
-              } : {}}
-              transition={{ duration: 1.5, repeat: Infinity }}
+            <motion.div
+              animate={{
+                scale: [1, 1.05, 1],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
               style={{
-                fontSize: '1.2rem',
-                padding: '1.2rem 3rem',
-                background: 'linear-gradient(135deg, #FF43B9, #7043FF)',
+                padding: '1.5rem 2rem',
+                background: 'linear-gradient(135deg, rgba(112, 67, 255, 0.1), rgba(255, 67, 185, 0.1))',
                 border: '2px solid var(--reef-pink)',
-                opacity: isTriggering ? 0.6 : 1,
-                cursor: isTriggering ? 'not-allowed' : 'pointer'
+                borderRadius: '16px',
+                display: 'inline-block'
               }}
             >
-              {isTriggering ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  style={{ display: 'inline-block' }}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                style={{ display: 'inline-block', fontSize: '2rem', marginBottom: '0.5rem' }}
+              >
+                🎲
+              </motion.div>
+              <p style={{
+                fontSize: '1.2rem',
+                fontWeight: '600',
+                color: 'var(--reef-pink)',
+                marginBottom: '0.5rem'
+              }}>
+                Lottery Triggering Automatically...
+              </p>
+              <p style={{
+                fontSize: '0.9rem',
+                color: 'var(--text-secondary)'
+              }}>
+                Winner will be selected and prize sent automatically!
+              </p>
+            </motion.div>
+
+            {/* Manual trigger option */}
+            {account && (
+              <div style={{ marginTop: '1.5rem' }}>
+                <motion.button
+                  className="btn"
+                  onClick={handleTriggerLottery}
+                  disabled={isTriggering}
+                  whileHover={!isTriggering ? { scale: 1.05 } : {}}
+                  whileTap={!isTriggering ? { scale: 0.95 } : {}}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid var(--card-border)',
+                    padding: '0.8rem 1.5rem',
+                    fontSize: '0.9rem',
+                    opacity: isTriggering ? 0.5 : 0.7,
+                    cursor: isTriggering ? 'not-allowed' : 'pointer'
+                  }}
                 >
-                  🔄
-                </motion.div>
-              ) : (
-                '🎲 TRIGGER THE LOTTERY 🎲'
-              )}
-            </motion.button>
-            <p style={{
-              marginTop: '1rem',
-              color: 'var(--text-secondary)',
-              fontSize: '0.9rem'
-            }}>
-              ⏰ Round ended! Anyone can trigger.
-            </p>
+                  {isTriggering ? '🔄 Triggering...' : 'Or trigger manually'}
+                </motion.button>
+              </div>
+            )}
           </motion.div>
         )}
 

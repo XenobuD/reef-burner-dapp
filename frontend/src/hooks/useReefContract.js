@@ -502,6 +502,37 @@ export const useReefContract = () => {
     return () => clearInterval(countdown);
   }, [timeRemaining, fetchAllData]);
 
+  // Auto-trigger lottery when time expires (if connected)
+  useEffect(() => {
+    if (!contract || !account) return;
+    if (timeRemaining !== 0) return;
+
+    // Wait a bit after time expires to ensure blockchain is synced
+    const autoTriggerTimer = setTimeout(async () => {
+      try {
+        console.log('⏰ Time expired! Auto-triggering lottery...');
+
+        // Try to trigger the lottery automatically
+        const tx = await contract.triggerRoundEnd({
+          gasLimit: 800000
+        });
+
+        console.log('🎲 Auto-trigger transaction sent:', tx.hash);
+        await tx.wait();
+        console.log('✅ Lottery auto-triggered successfully!');
+
+        // Refresh all data to show winner
+        await fetchAllData();
+      } catch (error) {
+        console.log('⚠️ Auto-trigger failed (might be triggered by someone else):', error.message);
+        // Refresh data anyway to see if someone else triggered it
+        await fetchAllData();
+      }
+    }, 5000); // Wait 5 seconds after expiry to ensure time is truly up
+
+    return () => clearTimeout(autoTriggerTimer);
+  }, [timeRemaining, contract, account, fetchAllData]);
+
   // Note: Reef Provider doesn't support .on() for contract events
   // We use auto-refresh (every 10 seconds) + countdown timer (every 1 second) instead
 
