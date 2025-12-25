@@ -8,10 +8,13 @@ import { formatReef, parseReef, calculateBonus, calculateTickets } from '../util
 // Import contract ABI V2
 import ReefBurnerABI from '../contracts/ReefBurnerABI.json';
 
-// Contract address - V2 MAINNET
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0x44392f3FCeb4bd22d8b4DDc4569aDBed3ec7d472';
-const NETWORK = import.meta.env.VITE_NETWORK || 'reef_mainnet';
-const MAINNET_RPC = import.meta.env.VITE_MAINNET_RPC || 'wss://rpc.reefscan.com/ws';
+// Import configuration
+import { getConfig } from '../config';
+
+// Contract address - V2 MAINNET SECURE
+const CONTRACT_ADDRESS = getConfig('CONTRACT_ADDRESS');
+const NETWORK = getConfig('NETWORK');
+const MAINNET_RPC = getConfig('MAINNET_RPC');
 
 export const useReefContract = () => {
   const [account, setAccount] = useState(null);
