@@ -25,15 +25,18 @@ La fiecare burn:
 
 ---
 
-## ⚠️ FAZA DE TESTARE (1 Săptămână)
+## ⚠️ FAZA DE TESTARE (1-2 Săptămâni)
 
 **Parametri Actuali (Testare):**
 • Minim: **5 REEF** | Maxim: **8 REEF**
 • Loterie: **La fiecare 1 ORĂ**
 
-**După testare (Producție):**
+**Durată Testare:** 1-2 săptămâni (în funcție de feedback comunitate)
+
+**După testare reușită (Producție):**
 • Minim: **950 REEF** | Maxim: **1,500 REEF**
 • Loterie: **La fiecare 3 ZILE**
+• Lansare Oficială Producție
 
 ---
 

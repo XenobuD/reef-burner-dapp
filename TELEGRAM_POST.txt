@@ -10,9 +10,10 @@ Burn REEF → Create Deflation → Win Prizes!
 📜 Contract: 0xFdD061cBE98ef3D1f2a2d7A5e8e14CA57e3baA48
 🔍 Verify: https://reefscan.com/contract/0xFdD061cBE98ef3D1f2a2d7A5e8e14CA57e3baA48
 
-⚠️ TESTING PHASE (1 Week):
+⚠️ TESTING PHASE (1-2 Weeks):
 • Min: 5 REEF | Max: 8 REEF
 • Lottery: Every 1 Hour
+• Duration based on community feedback
 
 🔐 CRITICAL SECURITY:
 ⛔ CREATE NEW TEST WALLET - DON'T USE MAIN!
@@ -45,10 +46,10 @@ Burn REEF → Create Deflation → Win Prizes!
 ❌ Site asking for seed? SCAM!
 ❌ Different contract? SCAM!
 
-📊 After successful testing (~1 week):
+📊 After successful testing (1-2 weeks):
 → Production: 950-1,500 REEF per burn
 → Lottery: Every 3 days
-→ Marketing push
+→ Official launch + Marketing push
 
 💬 Help us test!
 • Report bugs on GitHub

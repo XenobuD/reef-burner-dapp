@@ -28,8 +28,8 @@ REEF Burner is a **deflationary lottery protocol** that permanently burns REEF t
 | Max Burn | **8 REEF** | 1,500 REEF |
 | Lottery Duration | **1 Hour** | 3 Days |
 
-**Testing Period:** ~1 week
-**After successful testing:** We'll switch to production parameters
+**Testing Period:** 1-2 weeks (based on community feedback and testing results)
+**After successful testing:** We'll switch to production parameters and launch officially
 
 ---
 
@@ -225,7 +225,7 @@ Check real-time stats on the dApp:
 - ⭐ **Star the repo** if you like the project
 - 🔄 **Share your experience** with the community
 
-**Official Telegram:** [Your Telegram Group Link]
+**Official Telegram:** [https://t.me/reefchain]
 **GitHub Issues:** https://github.com/XenobuD/reef-burner-dapp/issues
 
 ---

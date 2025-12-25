@@ -25,15 +25,18 @@ Every burn:
 
 ---
 
-## ⚠️ TESTING PHASE (1 Week)
+## ⚠️ TESTING PHASE (1-2 Weeks)
 
 **Current Parameters:**
 • Min: **5 REEF** | Max: **8 REEF**
 • Lottery: **Every 1 Hour**
 
-**After testing:**
+**Testing Duration:** 1-2 weeks based on community feedback
+
+**After successful testing:**
 • Min: **950 REEF** | Max: **1,500 REEF**
 • Lottery: **Every 3 Days**
+• Official Production Launch
 
 ---
 
