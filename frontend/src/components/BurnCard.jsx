@@ -16,6 +16,13 @@ const BurnCard = ({
   });
 
   const [bonusPercent, setBonusPercent] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile on mount
+  useEffect(() => {
+    const checkMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    setIsMobile(checkMobile);
+  }, []);
 
   useEffect(() => {
     const amount = parseFloat(burnAmount) || 0;
@@ -65,6 +72,29 @@ const BurnCard = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
+          {/* Mobile Warning */}
+          {isMobile && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                marginBottom: '1.5rem',
+                padding: '1rem',
+                background: 'rgba(255, 165, 0, 0.1)',
+                border: '1px solid orange',
+                borderRadius: '8px',
+                fontSize: '0.9rem'
+              }}
+            >
+              <p style={{ fontWeight: '600', marginBottom: '0.5rem', color: 'orange' }}>
+                📱 Mobile Users: Use Reef Wallet App!
+              </p>
+              <p style={{ fontSize: '0.85rem', lineHeight: '1.4', color: 'var(--text-secondary)' }}>
+                Open this site in the <strong>Reef Wallet in-app browser</strong> to connect.
+              </p>
+            </motion.div>
+          )}
+
           <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>
             Connect your wallet to start burning!
           </p>

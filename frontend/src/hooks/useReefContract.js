@@ -81,6 +81,11 @@ export const useReefContract = () => {
     }
   }, []);
 
+  // Check if mobile device
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+
   // Connect wallet
   const connectWallet = async () => {
     try {
@@ -89,7 +94,26 @@ export const useReefContract = () => {
 
       // Check for Reef Wallet
       if (!window.injectedWeb3 || !window.injectedWeb3['reef']) {
-        alert('⚠️ Reef Wallet extension not detected!\n\nPlease install Reef Wallet from Chrome Web Store');
+        // Show different message based on device type
+        if (isMobile()) {
+          alert('📱 Mobile Connection Required!\n\n' +
+                'To use this dApp on mobile:\n\n' +
+                '1. Download Reef Wallet app from:\n' +
+                '   • Google Play Store (Android)\n' +
+                '   • App Store (iOS)\n\n' +
+                '2. Open Reef Wallet app\n' +
+                '3. Tap the Browser icon (🌐)\n' +
+                '4. Enter URL: reef-burner-dapp.vercel.app\n' +
+                '5. Connect from within the app browser\n\n' +
+                'You MUST use the Reef Wallet in-app browser!');
+        } else {
+          alert('⚠️ Reef Wallet Extension Required!\n\n' +
+                'Please install Reef Wallet extension:\n\n' +
+                '1. Visit Chrome Web Store\n' +
+                '2. Search for "Reef Wallet"\n' +
+                '3. Click "Add to Chrome"\n' +
+                '4. Refresh this page');
+        }
         setLoading(false);
         return null;
       }
