@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
-import { Provider } from '@reef-defi/evm-provider';
+import { Provider, Signer } from '@reef-defi/evm-provider';
 import { WsProvider } from '@polkadot/api';
+import { web3Accounts, web3Enable, web3FromAddress } from '@polkadot/extension-dapp';
 import { formatReef, parseReef, calculateBonus, calculateTickets } from '../utils/helpers';
 
 // Import contract ABI (you'll need to copy this from the compiled contract)
@@ -85,38 +86,71 @@ export const useReefContract = () => {
       console.log('🔵 Starting wallet connection...');
       setLoading(true);
 
-      const provider = await initProvider();
-      if (!provider) {
-        alert('⚠️ Reef Wallet extension not detected!\n\nPlease install Reef Wallet from:\nhttps://chrome.google.com/webstore/detail/reef-wallet/mjgkpalnahacmhkikiommfiomhjipgjn');
+      // Check for Reef Wallet
+      if (!window.injectedWeb3 || !window.injectedWeb3['reef']) {
+        alert('⚠️ Reef Wallet extension not detected!\n\nPlease install Reef Wallet from Chrome Web Store');
         setLoading(false);
         return null;
       }
 
-      console.log('✅ Provider initialized');
+      console.log('✅ Reef Wallet detected');
 
-      // Use ethers.js Web3Provider with Reef Wallet (EVM compatible)
-      console.log('📢 Connecting to Reef Wallet via ethers...');
-
-      // Reef Wallet injects itself as ethereum provider (EVM compatible)
-      if (!window.ethereum) {
-        throw new Error('Reef Wallet not detected as ethereum provider');
+      // Initialize Reef Provider first
+      const reefProvider = await initProvider();
+      if (!reefProvider) {
+        throw new Error('Failed to initialize Reef Provider');
       }
 
-      // Create ethers provider
-      const ethersProvider = new ethers.providers.Web3Provider(window.ethereum, 'any');
+      // Use Polkadot extension API to connect to Reef Wallet
+      console.log('📢 Enabling Polkadot extensions...');
+      const extensions = await web3Enable('Reef Burner dApp');
+      console.log('✅ Extensions enabled:', extensions);
 
-      // Request account access
-      console.log('🔍 Requesting accounts...');
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      if (extensions.length === 0) {
+        throw new Error('No Polkadot extension found. Please install Reef Wallet.');
+      }
 
-      // Get signer
-      const signer = ethersProvider.getSigner();
-      const address = await signer.getAddress();
+      // Get all accounts from Reef Wallet
+      console.log('📋 Getting accounts...');
+      const allAccounts = await web3Accounts();
+      console.log('✅ Found accounts:', allAccounts);
 
-      console.log('✅ Connected to address:', address);
-      setAccount(address);
+      if (allAccounts.length === 0) {
+        throw new Error('No accounts found in Reef Wallet. Please create an account first.');
+      }
 
-      // Initialize contract
+      // Select the first account
+      const selectedAccount = allAccounts[0];
+      console.log('👤 Selected account:', selectedAccount);
+
+      // Get the injector (signer) for this account
+      console.log('🔐 Getting injector for account...');
+      const injector = await web3FromAddress(selectedAccount.address);
+      console.log('✅ Got injector:', injector);
+
+      // Create Reef Signer using the account address and injector
+      console.log('🔐 Creating Reef Signer...');
+      const signer = new Signer(
+        reefProvider,
+        selectedAccount.address,
+        injector.signer
+      );
+
+      // Check if account is claimed (has EVM address)
+      const isClaimed = await signer.isClaimed();
+      console.log('🔍 Account claimed?', isClaimed);
+
+      if (!isClaimed) {
+        throw new Error('EVM account not claimed. Please claim your EVM address in Reef Wallet first.');
+      }
+
+      // Get EVM address
+      const evmAddress = await signer.getAddress();
+      console.log('✅ Got EVM address:', evmAddress);
+
+      setAccount(evmAddress);
+
+      // Initialize contract with the signer
       if (CONTRACT_ADDRESS) {
         console.log('📄 Initializing contract at:', CONTRACT_ADDRESS);
         const contractInstance = new ethers.Contract(
@@ -125,14 +159,14 @@ export const useReefContract = () => {
           signer
         );
         setContract(contractInstance);
-        console.log('✅ Contract initialized!');
+        console.log('✅ Contract initialized with signer!');
       } else {
         console.warn('⚠️ No contract address set!');
       }
 
       setLoading(false);
       console.log('🎉 Wallet connected successfully!');
-      return address;
+      return evmAddress;
     } catch (error) {
       console.error('❌ Error connecting wallet:', error);
       alert('Failed to connect wallet: ' + error.message);
@@ -309,26 +343,8 @@ export const useReefContract = () => {
     return () => clearInterval(interval);
   }, [contract, fetchAllData]);
 
-  // Listen to contract events
-  useEffect(() => {
-    if (!contract) return;
-
-    // Listen for Burned events
-    contract.on('Burned', (burner, amount, burnedAmount, prizeAmount, creatorAmount, roundNumber) => {
-      console.log('Burn event:', { burner, amount: formatReef(amount) });
-      fetchAllData();
-    });
-
-    // Listen for WinnerSelected events
-    contract.on('WinnerSelected', (winner, prizeAmount, roundNumber, timestamp) => {
-      console.log('Winner selected:', { winner, prize: formatReef(prizeAmount) });
-      fetchAllData();
-    });
-
-    return () => {
-      contract.removeAllListeners();
-    };
-  }, [contract, fetchAllData]);
+  // Note: Reef Provider doesn't support .on() for contract events
+  // We'll rely on auto-refresh (every 30 seconds) instead
 
   return {
     account,
