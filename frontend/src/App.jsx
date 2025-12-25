@@ -23,6 +23,7 @@ function App() {
     switchAccount,
     disconnectWallet,
     burnTokens,
+    triggerLottery,
     statistics,
     participants,
     winners,
@@ -33,6 +34,7 @@ function App() {
 
   const [burnAmount, setBurnAmount] = useState('5'); // Testing mode: 5-8 REEF
   const [isBurning, setIsBurning] = useState(false);
+  const [isTriggering, setIsTriggering] = useState(false);
 
   const handleBurn = async () => {
     if (!account || !burnAmount) return;
@@ -45,6 +47,21 @@ function App() {
       console.error('Burn failed:', error);
     } finally {
       setIsBurning(false);
+    }
+  };
+
+  const handleTriggerLottery = async () => {
+    if (!account) return;
+
+    try {
+      setIsTriggering(true);
+      await triggerLottery();
+      alert('🎉 Lottery triggered successfully! Check the winner below.');
+    } catch (error) {
+      console.error('Trigger failed:', error);
+      alert(`❌ Failed to trigger lottery: ${error.message}`);
+    } finally {
+      setIsTriggering(false);
     }
   };
 
@@ -121,6 +138,54 @@ function App() {
             loading={loading}
           />
         </motion.div>
+
+        {/* Trigger Lottery Button (shows when round ended) */}
+        {account && timeRemaining <= 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              marginTop: '2rem',
+              textAlign: 'center'
+            }}
+          >
+            <motion.button
+              className="btn btn-primary"
+              onClick={handleTriggerLottery}
+              disabled={isTriggering}
+              whileHover={!isTriggering ? { scale: 1.05 } : {}}
+              whileTap={!isTriggering ? { scale: 0.95 } : {}}
+              style={{
+                fontSize: '1.2rem',
+                padding: '1.2rem 3rem',
+                background: 'linear-gradient(135deg, #FF43B9, #7043FF)',
+                border: '2px solid var(--reef-pink)',
+                boxShadow: '0 8px 32px rgba(255, 67, 185, 0.4)',
+                opacity: isTriggering ? 0.6 : 1,
+                cursor: isTriggering ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {isTriggering ? (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  style={{ display: 'inline-block' }}
+                >
+                  🔄
+                </motion.div>
+              ) : (
+                '🎲 TRIGGER LOTTERY & SELECT WINNER 🎲'
+              )}
+            </motion.button>
+            <p style={{
+              marginTop: '1rem',
+              color: 'var(--text-secondary)',
+              fontSize: '0.9rem'
+            }}>
+              ⏰ Round ended! Click to select the winner and start a new round.
+            </p>
+          </motion.div>
+        )}
 
         {/* Main Burn Section */}
         <div style={{

@@ -369,6 +369,47 @@ export const useReefContract = () => {
     }
   };
 
+  // Trigger lottery manually (anyone can call if round ended)
+  const triggerLottery = async () => {
+    if (!contract) {
+      throw new Error('Contract not initialized');
+    }
+
+    try {
+      console.log('🎲 Triggering lottery...');
+
+      // Call triggerRoundEnd function
+      const tx = await contract.triggerRoundEnd({
+        gasLimit: 800000 // Higher gas for lottery logic
+      });
+
+      console.log('Lottery trigger transaction sent:', tx.hash);
+
+      // Wait for confirmation
+      const receipt = await tx.wait();
+      console.log('Lottery triggered!', receipt);
+
+      // Refresh all data to show winner
+      await Promise.all([
+        fetchStatistics(),
+        fetchParticipants(),
+        fetchWinners(),
+        fetchTimeRemaining()
+      ]);
+
+      return receipt;
+    } catch (error) {
+      console.error('Error triggering lottery:', error);
+
+      // Check if it's "Round not finished yet" error
+      if (error.message.includes('Round not finished')) {
+        throw new Error('Lottery round is not finished yet. Wait for the timer to expire.');
+      }
+
+      throw error;
+    }
+  };
+
   // Fetch all data
   const fetchAllData = useCallback(async () => {
     if (!contract) return;
@@ -413,6 +454,7 @@ export const useReefContract = () => {
     switchAccount,
     disconnectWallet,
     burnTokens,
+    triggerLottery,
     statistics,
     participants,
     winners,
