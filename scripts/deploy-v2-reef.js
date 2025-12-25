@@ -16,8 +16,14 @@ async function main() {
   await provider.api.isReady;
   console.log("✅ Connected to Reef Mainnet\n");
 
-  // Import account from seed phrase
-  const mnemonic = "YOUR_SEED_PHRASE_HERE"; // Removed for security
+  // Import account from seed phrase (from hardhat.config.js)
+  const config = require('../hardhat.config.js');
+  const mnemonic = config.networks.reef_mainnet.seeds.deployer;
+
+  if (!mnemonic) {
+    throw new Error("No seed phrase found in hardhat.config.js! Please add it to reef_mainnet.seeds.deployer");
+  }
+
   const keyring = new Keyring({ type: 'sr25519' });
   const keyringPair = keyring.addFromUri(mnemonic);
 

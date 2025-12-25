@@ -26,8 +26,8 @@ module.exports = {
     reef_mainnet: {
       url: "https://rpc.reefscan.com",
       seeds: {
-        // Seed phrase removed for security after V2 deployment
-        // Contract deployed at: 0x9217CaCEa3Eeaf1Fb941c4Fdc17d165248Dd896f
+        // Seed phrase removed for security after V2 redeploy
+        // New contract deployed at: 0x840f4f3acFeC2Ff45F714994b05363F1fD037dB5
       },
       scanUrl: "https://reefscan.com"
     }
