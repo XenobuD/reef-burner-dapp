@@ -13,7 +13,6 @@ import { getConfig } from '../config';
 
 // Contract address - V2 MAINNET SECURE
 const CONTRACT_ADDRESS = getConfig('CONTRACT_ADDRESS');
-const NETWORK = getConfig('NETWORK');
 const MAINNET_RPC = getConfig('MAINNET_RPC');
 
 export const useReefContract = () => {
@@ -588,53 +587,55 @@ export const useReefContract = () => {
     return () => clearInterval(countdown);
   }, [timeRemaining, fetchAllData]);
 
-  // Auto-trigger lottery when time expires (if connected)
-  useEffect(() => {
-    if (!contract || !account) return;
-    if (timeRemaining !== 0) return;
-
-    // Wait a bit after time expires to ensure blockchain is synced
-    const autoTriggerTimer = setTimeout(async () => {
-      try {
-        console.log('⏰ Time expired! Auto-triggering lottery...');
-
-        // STEP 1: Commit randomness (if not already committed)
-        try {
-          const tx1 = await contract.triggerRoundEnd({
-            gasLimit: 500000
-          });
-          console.log('📝 Step 1: Randomness committed:', tx1.hash);
-          await tx1.wait();
-          console.log('✅ Randomness committed successfully!');
-        } catch (error) {
-          console.log('⚠️ Randomness already committed or failed:', error.message);
-        }
-
-        // STEP 2: Wait 3 blocks then reveal winner
-        console.log('⏳ Waiting 3 blocks for randomness reveal...');
-
-        // Wait ~45 seconds (Reef has ~15 second block time, so 3 blocks = ~45 seconds)
-        await new Promise(resolve => setTimeout(resolve, 50000));
-
-        console.log('🎲 Step 2: Revealing winner...');
-        const tx2 = await contract.revealWinner({
-          gasLimit: 800000
-        });
-        console.log('🎲 Winner reveal transaction sent:', tx2.hash);
-        await tx2.wait();
-        console.log('✅ Winner revealed successfully!');
-
-        // Refresh all data to show winner
-        await fetchAllData();
-      } catch (error) {
-        console.log('⚠️ Auto-trigger failed (might be triggered by someone else):', error.message);
-        // Refresh data anyway to see if someone else triggered it
-        await fetchAllData();
-      }
-    }, 5000); // Wait 5 seconds after expiry to ensure time is truly up
-
-    return () => clearTimeout(autoTriggerTimer);
-  }, [timeRemaining, contract, account, fetchAllData]);
+  // AUTO-TRIGGER DISABLED - User must manually trigger lottery
+  // This prevents annoying wallet popups asking for password twice automatically
+  //
+  // useEffect(() => {
+  //   if (!contract || !account) return;
+  //   if (timeRemaining !== 0) return;
+  //
+  //   // Wait a bit after time expires to ensure blockchain is synced
+  //   const autoTriggerTimer = setTimeout(async () => {
+  //     try {
+  //       console.log('⏰ Time expired! Auto-triggering lottery...');
+  //
+  //       // STEP 1: Commit randomness (if not already committed)
+  //       try {
+  //         const tx1 = await contract.triggerRoundEnd({
+  //           gasLimit: 500000
+  //         });
+  //         console.log('📝 Step 1: Randomness committed:', tx1.hash);
+  //         await tx1.wait();
+  //         console.log('✅ Randomness committed successfully!');
+  //       } catch (error) {
+  //         console.log('⚠️ Randomness already committed or failed:', error.message);
+  //       }
+  //
+  //       // STEP 2: Wait 3 blocks then reveal winner
+  //       console.log('⏳ Waiting 3 blocks for randomness reveal...');
+  //
+  //       // Wait ~45 seconds (Reef has ~15 second block time, so 3 blocks = ~45 seconds)
+  //       await new Promise(resolve => setTimeout(resolve, 50000));
+  //
+  //       console.log('🎲 Step 2: Revealing winner...');
+  //       const tx2 = await contract.revealWinner({
+  //         gasLimit: 800000
+  //       });
+  //       console.log('🎲 Winner reveal transaction sent:', tx2.hash);
+  //       await tx2.wait();
+  //       console.log('✅ Winner revealed successfully!');
+  //
+  //       // Refresh all data to show winner
+  //       await fetchAllData();
+  //     } catch (error) {
+  //       console.log('⚠️ Auto-trigger failed (might be triggered by someone else):', error.message);
+  //       // Refresh data anyway to see if someone else triggered it
+  //       await fetchAllData();
+  //     }
+  //   }, 5000); // Wait 5 seconds after expiry to ensure time is truly up
+  //
+  //   return () => clearTimeout(autoTriggerTimer);
+  // }, [timeRemaining, contract, account, fetchAllData]);
 
   // Note: Reef Provider doesn't support .on() for contract events
   // We use auto-refresh (every 10 seconds) + countdown timer (every 1 second) instead
