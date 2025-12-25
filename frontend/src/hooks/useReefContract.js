@@ -5,8 +5,8 @@ import { WsProvider } from '@polkadot/api';
 import { web3Accounts, web3Enable, web3FromAddress } from '@polkadot/extension-dapp';
 import { formatReef, parseReef, calculateBonus, calculateTickets } from '../utils/helpers';
 
-// Import contract ABI (you'll need to copy this from the compiled contract)
-import ReefBurnerABI from '../contracts/ReefBurner.json';
+// Import contract ABI V2
+import ReefBurnerABI from '../contracts/ReefBurnerABI.json';
 
 // Contract address - will be set after deployment
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '';
