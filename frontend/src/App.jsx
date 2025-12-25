@@ -49,12 +49,44 @@ function App() {
   const handleBurn = async () => {
     if (!account || !burnAmount) return;
 
+    // Validate amount before sending transaction
+    const amount = parseFloat(burnAmount);
+    if (isNaN(amount)) {
+      alert('⚠️ Invalid amount. Please enter a number.');
+      return;
+    }
+
+    if (amount < 5) {
+      alert('⚠️ Amount too low!\n\nMinimum: 5 REEF (testing mode)');
+      return;
+    }
+
+    if (amount > 8) {
+      alert('⚠️ Amount too high!\n\nMaximum: 8 REEF (testing mode)');
+      return;
+    }
+
     try {
       setIsBurning(true);
       await burnTokens(burnAmount);
       setBurnAmount('5'); // Reset to minimum (testing mode: 5 REEF)
+      alert('✅ Burn successful! You are now entered in the lottery.');
     } catch (error) {
       console.error('Burn failed:', error);
+
+      // User-friendly error messages
+      let errorMsg = '❌ Burn failed!\n\n';
+      if (error.message.includes('insufficient funds')) {
+        errorMsg += 'Insufficient REEF balance. Make sure you have enough REEF to cover the burn amount + gas fees.';
+      } else if (error.message.includes('user rejected')) {
+        errorMsg += 'Transaction was rejected in your wallet.';
+      } else if (error.message.includes('Max participants')) {
+        errorMsg += 'Maximum participants reached for this round. Please wait for the next round.';
+      } else {
+        errorMsg += error.message;
+      }
+
+      alert(errorMsg);
     } finally {
       setIsBurning(false);
     }
