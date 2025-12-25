@@ -171,8 +171,8 @@ const AboutModal = ({ isOpen, onClose }) => {
               </h2>
               <div style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '12px', padding: '1rem' }}>
                 <p style={{ marginBottom: '0.5rem' }}><strong>🌐 dApp:</strong> <a href="https://reef-burner-dapp.vercel.app/" style={{ color: 'var(--reef-pink)' }}>https://reef-burner-dapp.vercel.app/</a></p>
-                <p style={{ marginBottom: '0.5rem' }}><strong>📜 Contract V2:</strong> <code style={{ background: 'rgba(0,0,0,0.3)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>0x840f4f3acFeC2Ff45F714994b05363F1fD037dB5</code></p>
-                <p style={{ marginBottom: '0.5rem' }}><strong>🔍 ReefScan:</strong> <a href="https://reefscan.com/contract/0x840f4f3acFeC2Ff45F714994b05363F1fD037dB5" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--reef-pink)' }}>Verify Contract</a></p>
+                <p style={{ marginBottom: '0.5rem' }}><strong>📜 Contract V2:</strong> <code style={{ background: 'rgba(0,0,0,0.3)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>0xAe29f999d0B0987573C89C8a2aDC3642bf787BfA</code></p>
+                <p style={{ marginBottom: '0.5rem' }}><strong>🔍 ReefScan:</strong> <a href="https://reefscan.com/contract/0xAe29f999d0B0987573C89C8a2aDC3642bf787BfA" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--reef-pink)' }}>Verify Contract</a></p>
                 <p><strong>💾 GitHub:</strong> <a href="https://github.com/XenobuD/reef-burner-dapp" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--reef-pink)' }}>Open Source Code</a></p>
               </div>
               <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(255, 165, 0, 0.1)', border: '1px solid orange', borderRadius: '8px' }}>
