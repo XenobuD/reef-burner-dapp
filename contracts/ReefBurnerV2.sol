@@ -35,7 +35,7 @@ contract ReefBurnerV2 {
     uint256 public roundNumber;
     uint256 public roundStartTime;
 
-    uint256 public constant ROUND_DURATION = 1 hours; // Testing mode
+    uint256 public constant ROUND_DURATION = 5 minutes; // Fast testing mode (5 min rounds)
     uint256 public minBurnAmount = 5 ether;
     uint256 public constant MAX_BURN_AMOUNT = 8 ether;
     uint256 public constant MAX_PARTICIPANTS_PER_ROUND = 500;

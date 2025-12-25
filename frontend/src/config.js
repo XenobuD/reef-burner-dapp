@@ -2,8 +2,8 @@
 // This file is committed to git and contains public contract addresses
 
 export const config = {
-  // Contract address - V2 SECURE (Security Audited)
-  CONTRACT_ADDRESS: '0xeD978A516e6f1aABbd4395307A7B7d0C1B422dC6',
+  // Contract address - V2 FAST TEST (5 minute rounds for quick testing)
+  CONTRACT_ADDRESS: '0x82EE1373C213D291BD4839C6917F675cAD4ab469',
 
   // Network
   NETWORK: 'reef_mainnet',
