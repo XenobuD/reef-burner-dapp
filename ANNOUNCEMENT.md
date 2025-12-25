@@ -18,7 +18,7 @@ REEF Burner is a **deflationary lottery protocol** that permanently burns REEF t
 
 ---
 
-## ⚠️ TESTING PARAMETERS (1 Week Only)
+## ⚠️ TESTING PARAMETERS (1-2 Weeks)
 
 **For safety during testing, we've adjusted the parameters:**
 
@@ -201,7 +201,7 @@ Check real-time stats on the dApp:
 
 ## 🚀 Testing Roadmap
 
-### Phase 1: Community Testing (Current - 1 Week)
+### Phase 1: Community Testing (Current - 1-2 Weeks)
 - ✅ Deploy to Reef Mainnet
 - ✅ Testing parameters: 5-8 REEF, 1 hour lottery
 - 🔄 Gather community feedback

@@ -159,7 +159,7 @@ A: Smart contract automatically sends prize. No human involved.
 A: That's why we're testing! Use test wallet, start small.
 
 **Q: When production launch?**
-A: After ~1 week successful testing.
+A: After 1-2 weeks successful testing.
 
 ---
 
