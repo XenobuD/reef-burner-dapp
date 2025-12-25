@@ -143,40 +143,43 @@ export const useReefContract = () => {
         throw new Error('Failed to initialize Reef Provider');
       }
 
-      // Enable Reef Wallet specifically
-      console.log('📢 Enabling Reef Wallet...');
-      const reefExtension = window.injectedWeb3['reef'];
-      await reefExtension.enable('Reef Burner dApp');
-      console.log('✅ Reef Wallet enabled');
+      // Use Polkadot extension API to connect to Reef Wallet
+      console.log('📢 Enabling Polkadot extensions...');
+      const extensions = await web3Enable('Reef Burner dApp');
+      console.log('✅ Extensions enabled:', extensions);
 
-      // Get accounts directly from Reef extension
-      console.log('📋 Getting accounts from Reef Wallet...');
-      const allAccounts = await reefExtension.accounts.get();
+      if (extensions.length === 0) {
+        throw new Error('No Polkadot extension found. Please install Reef Wallet.');
+      }
+
+      // Get all accounts from Reef Wallet
+      console.log('📋 Getting accounts...');
+      const allAccounts = await web3Accounts();
       console.log('✅ Found accounts:', allAccounts);
 
-      if (!allAccounts || allAccounts.length === 0) {
+      if (allAccounts.length === 0) {
         throw new Error('No accounts found in Reef Wallet. Please create an account first.');
       }
 
-      // Store all available accounts in compatible format
-      const formattedAccounts = allAccounts.map(acc => ({
-        address: acc.address,
-        name: acc.name || 'Reef Account',
-        source: 'reef'
-      }));
-      setAvailableAccounts(formattedAccounts);
+      // Store all available accounts
+      setAvailableAccounts(allAccounts);
 
       // Select the first account by default
       const selectedAccount = allAccounts[0];
       console.log('👤 Selected account:', selectedAccount);
       console.log(`📊 Total accounts available: ${allAccounts.length}`);
 
-      // Create Reef Signer using the Reef extension's signer
-      console.log('🔐 Creating Reef Signer with extension signer...');
+      // Get the injector (signer) for this account
+      console.log('🔐 Getting injector for account...');
+      const injector = await web3FromAddress(selectedAccount.address);
+      console.log('✅ Got injector:', injector);
+
+      // Create Reef Signer using the account address and injector
+      console.log('🔐 Creating Reef Signer...');
       const signer = new Signer(
         reefProvider,
         selectedAccount.address,
-        reefExtension.signer
+        injector.signer
       );
 
       // Check if account is claimed (has EVM address)
@@ -228,24 +231,20 @@ export const useReefContract = () => {
         throw new Error('Provider not initialized');
       }
 
-      // Get Reef extension
-      const reefExtension = window.injectedWeb3['reef'];
-      if (!reefExtension) {
-        throw new Error('Reef Wallet not found');
-      }
-
       // Find the selected account
       const selectedAccount = availableAccounts.find(acc => acc.address === accountAddress);
       if (!selectedAccount) {
         throw new Error('Account not found');
       }
 
-      // Create new signer with Reef extension
-      console.log('🔐 Creating signer for new account...');
+      // Get injector for the new account
+      const injector = await web3FromAddress(selectedAccount.address);
+
+      // Create new signer
       const signer = new Signer(
         provider,
         selectedAccount.address,
-        reefExtension.signer
+        injector.signer
       );
 
       // Get EVM address
@@ -382,28 +381,21 @@ export const useReefContract = () => {
     }
 
     try {
-      console.log('🔥 Starting burn process...');
-      console.log('Amount:', amount, 'REEF');
-
       const weiAmount = parseReef(amount);
-      console.log('Wei amount:', weiAmount.toString());
 
       // Call burn function
-      console.log('📤 Sending transaction to contract...');
       const tx = await contract.burn({
         value: weiAmount,
         gasLimit: 500000 // Adjust as needed
       });
 
-      console.log('✅ Transaction sent! Hash:', tx.hash);
-      console.log('⏳ Waiting for confirmation...');
+      console.log('Transaction sent:', tx.hash);
 
       // Wait for confirmation
       const receipt = await tx.wait();
-      console.log('✅ Transaction confirmed!', receipt);
+      console.log('Transaction confirmed:', receipt);
 
       // Refresh data
-      console.log('🔄 Refreshing contract data...');
       await Promise.all([
         fetchStatistics(),
         fetchParticipants(),
@@ -411,15 +403,9 @@ export const useReefContract = () => {
         fetchTimeRemaining()
       ]);
 
-      console.log('🎉 Burn completed successfully!');
       return receipt;
     } catch (error) {
-      console.error('❌ Error burning tokens:', error);
-      console.error('Error details:', {
-        message: error.message,
-        code: error.code,
-        data: error.data
-      });
+      console.error('Error burning tokens:', error);
       throw error;
     }
   };
