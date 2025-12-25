@@ -25,10 +25,12 @@ function App() {
     disconnectWallet,
     burnTokens,
     triggerLottery,
+    revealWinner,
     statistics,
     participants,
     winners,
     timeRemaining,
+    randomnessStatus,
     loading,
     availableAccounts
   } = contractHook();
@@ -36,6 +38,7 @@ function App() {
   const [burnAmount, setBurnAmount] = useState('5'); // Testing mode: 5-8 REEF
   const [isBurning, setIsBurning] = useState(false);
   const [isTriggering, setIsTriggering] = useState(false);
+  const [isRevealing, setIsRevealing] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
 
   // Check URL parameters to auto-open About modal
@@ -108,6 +111,21 @@ function App() {
       alert(`❌ Failed to trigger lottery: ${error.message}`);
     } finally {
       setIsTriggering(false);
+    }
+  };
+
+  const handleRevealWinner = async () => {
+    if (!account) return;
+
+    try {
+      setIsRevealing(true);
+      await revealWinner();
+      alert('🎉 Winner revealed successfully!');
+    } catch (error) {
+      console.error('Reveal failed:', error);
+      alert(`❌ Failed to reveal winner: ${error.message}`);
+    } finally {
+      setIsRevealing(false);
     }
   };
 
@@ -191,8 +209,71 @@ function App() {
           />
         </motion.div>
 
+        {/* Show reveal button if randomness committed but winner not revealed */}
+        {randomnessStatus.committed && account && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              marginTop: '2rem',
+              textAlign: 'center'
+            }}
+          >
+            <motion.div
+              animate={{
+                scale: [1, 1.05, 1],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+              style={{
+                padding: '1.5rem 2rem',
+                background: 'linear-gradient(135deg, rgba(255, 165, 0, 0.1), rgba(255, 67, 185, 0.1))',
+                border: '2px solid orange',
+                borderRadius: '16px',
+                display: 'inline-block'
+              }}
+            >
+              <p style={{
+                fontSize: '1.2rem',
+                fontWeight: '600',
+                color: 'orange',
+                marginBottom: '0.5rem'
+              }}>
+                ⏳ Waiting for Winner Reveal
+              </p>
+              <p style={{
+                fontSize: '0.9rem',
+                color: 'var(--text-secondary)',
+                marginBottom: '1rem'
+              }}>
+                {randomnessStatus.blocksUntilReveal > 0
+                  ? `Wait ${randomnessStatus.blocksUntilReveal} more blocks before revealing...`
+                  : 'Ready to reveal winner! Click below to complete the lottery.'}
+              </p>
+
+              {randomnessStatus.blocksUntilReveal === 0 && (
+                <motion.button
+                  className="btn"
+                  onClick={handleRevealWinner}
+                  disabled={isRevealing}
+                  whileHover={!isRevealing ? { scale: 1.05 } : {}}
+                  whileTap={!isRevealing ? { scale: 0.95 } : {}}
+                  style={{
+                    background: 'linear-gradient(135deg, var(--reef-purple), var(--reef-pink))',
+                    padding: '1rem 2rem',
+                    fontSize: '1.1rem',
+                    opacity: isRevealing ? 0.5 : 1,
+                    cursor: isRevealing ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {isRevealing ? '🔄 Revealing Winner...' : '🎲 Reveal Winner Now!'}
+                </motion.button>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+
         {/* Auto-trigger info (shows when round ended) */}
-        {timeRemaining <= 0 && (
+        {timeRemaining <= 0 && !randomnessStatus.committed && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}

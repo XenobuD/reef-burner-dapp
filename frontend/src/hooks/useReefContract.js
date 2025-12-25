@@ -29,6 +29,11 @@ export const useReefContract = () => {
   const [participants, setParticipants] = useState([]);
   const [winners, setWinners] = useState([]);
   const [timeRemaining, setTimeRemaining] = useState(0);
+  const [randomnessStatus, setRandomnessStatus] = useState({
+    committed: false,
+    commitBlock: 0,
+    blocksUntilReveal: 0
+  });
 
   // Wait for Reef Wallet extension to inject into page
   const waitForReefWallet = async (maxAttempts = 10, delayMs = 300) => {
@@ -380,6 +385,22 @@ export const useReefContract = () => {
     }
   }, [contract]);
 
+  // Fetch randomness status
+  const fetchRandomnessStatus = useCallback(async () => {
+    if (!contract) return;
+
+    try {
+      const status = await contract.getRandomnessStatus();
+      setRandomnessStatus({
+        committed: status.committed,
+        commitBlock: status.commitBlock.toNumber(),
+        blocksUntilReveal: status.blocksUntilReveal.toNumber()
+      });
+    } catch (error) {
+      console.error('Error fetching randomness status:', error);
+    }
+  }, [contract]);
+
   // Burn tokens
   const burnTokens = async (amount) => {
     if (!contract || !amount) {
@@ -423,18 +444,35 @@ export const useReefContract = () => {
     }
 
     try {
-      console.log('🎲 Triggering lottery...');
+      console.log('🎲 Starting 2-step lottery trigger process...');
 
-      // Call triggerRoundEnd function
-      const tx = await contract.triggerRoundEnd({
-        gasLimit: 800000 // Higher gas for lottery logic
+      // STEP 1: Commit randomness
+      try {
+        console.log('📝 Step 1/2: Committing randomness...');
+        const tx1 = await contract.triggerRoundEnd({
+          gasLimit: 500000
+        });
+        console.log('Transaction 1 sent:', tx1.hash);
+        await tx1.wait();
+        console.log('✅ Randomness committed!');
+      } catch (error) {
+        console.log('⚠️ Randomness already committed:', error.message);
+      }
+
+      // STEP 2: Wait 3 blocks then reveal winner
+      console.log('⏳ Waiting 3 blocks for randomness to mature...');
+      console.log('(This will take ~50 seconds - please wait!)');
+
+      // Wait ~50 seconds (Reef has ~15 second block time, 3 blocks = ~45 seconds + buffer)
+      await new Promise(resolve => setTimeout(resolve, 50000));
+
+      console.log('🎲 Step 2/2: Revealing winner...');
+      const tx2 = await contract.revealWinner({
+        gasLimit: 800000
       });
-
-      console.log('Lottery trigger transaction sent:', tx.hash);
-
-      // Wait for confirmation
-      const receipt = await tx.wait();
-      console.log('Lottery triggered!', receipt);
+      console.log('Transaction 2 sent:', tx2.hash);
+      const receipt = await tx2.wait();
+      console.log('✅ Winner revealed!', receipt);
 
       // Refresh all data to show winner
       await Promise.all([
@@ -467,14 +505,15 @@ export const useReefContract = () => {
         fetchStatistics(),
         fetchParticipants(),
         fetchWinners(),
-        fetchTimeRemaining()
+        fetchTimeRemaining(),
+        fetchRandomnessStatus()
       ]);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
-  }, [contract, fetchStatistics, fetchParticipants, fetchWinners, fetchTimeRemaining]);
+  }, [contract, fetchStatistics, fetchParticipants, fetchWinners, fetchTimeRemaining, fetchRandomnessStatus]);
 
   // Auto-refresh data
   useEffect(() => {
@@ -518,14 +557,31 @@ export const useReefContract = () => {
       try {
         console.log('⏰ Time expired! Auto-triggering lottery...');
 
-        // Try to trigger the lottery automatically
-        const tx = await contract.triggerRoundEnd({
+        // STEP 1: Commit randomness (if not already committed)
+        try {
+          const tx1 = await contract.triggerRoundEnd({
+            gasLimit: 500000
+          });
+          console.log('📝 Step 1: Randomness committed:', tx1.hash);
+          await tx1.wait();
+          console.log('✅ Randomness committed successfully!');
+        } catch (error) {
+          console.log('⚠️ Randomness already committed or failed:', error.message);
+        }
+
+        // STEP 2: Wait 3 blocks then reveal winner
+        console.log('⏳ Waiting 3 blocks for randomness reveal...');
+
+        // Wait ~45 seconds (Reef has ~15 second block time, so 3 blocks = ~45 seconds)
+        await new Promise(resolve => setTimeout(resolve, 50000));
+
+        console.log('🎲 Step 2: Revealing winner...');
+        const tx2 = await contract.revealWinner({
           gasLimit: 800000
         });
-
-        console.log('🎲 Auto-trigger transaction sent:', tx.hash);
-        await tx.wait();
-        console.log('✅ Lottery auto-triggered successfully!');
+        console.log('🎲 Winner reveal transaction sent:', tx2.hash);
+        await tx2.wait();
+        console.log('✅ Winner revealed successfully!');
 
         // Refresh all data to show winner
         await fetchAllData();
@@ -542,6 +598,33 @@ export const useReefContract = () => {
   // Note: Reef Provider doesn't support .on() for contract events
   // We use auto-refresh (every 10 seconds) + countdown timer (every 1 second) instead
 
+  // Manual reveal winner (for when randomness is committed but winner not revealed)
+  const revealWinner = async () => {
+    if (!contract) {
+      throw new Error('Contract not initialized');
+    }
+
+    try {
+      console.log('🎲 Revealing winner manually...');
+
+      const tx = await contract.revealWinner({
+        gasLimit: 800000
+      });
+
+      console.log('Reveal transaction sent:', tx.hash);
+      const receipt = await tx.wait();
+      console.log('✅ Winner revealed!', receipt);
+
+      // Refresh all data
+      await fetchAllData();
+
+      return receipt;
+    } catch (error) {
+      console.error('Error revealing winner:', error);
+      throw error;
+    }
+  };
+
   return {
     account,
     provider,
@@ -551,10 +634,12 @@ export const useReefContract = () => {
     disconnectWallet,
     burnTokens,
     triggerLottery,
+    revealWinner,
     statistics,
     participants,
     winners,
     timeRemaining,
+    randomnessStatus,
     loading,
     availableAccounts
   };
