@@ -27,11 +27,31 @@ export const useReefContract = () => {
   const [winners, setWinners] = useState([]);
   const [timeRemaining, setTimeRemaining] = useState(0);
 
+  // Wait for Reef Wallet extension to inject into page
+  const waitForReefWallet = async (maxAttempts = 10, delayMs = 300) => {
+    for (let i = 0; i < maxAttempts; i++) {
+      console.log(`🔍 Attempt ${i + 1}/${maxAttempts}: Checking for Reef Wallet...`);
+
+      if (window.injectedWeb3 && window.injectedWeb3['reef']) {
+        console.log('✅ Reef Wallet found!');
+        return true;
+      }
+
+      console.log(`⏳ Waiting ${delayMs}ms before next check...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+
+    console.error('❌ Reef Wallet not detected after all attempts');
+    return false;
+  };
+
   // Initialize provider (Reef Mainnet)
   const initProvider = useCallback(async () => {
     try {
-      // For Reef networks, use Reef provider with wallet extension
-      if (!window.injectedWeb3 || !window.injectedWeb3['reef']) {
+      // Wait for Reef Wallet extension to be injected
+      const walletFound = await waitForReefWallet();
+
+      if (!walletFound) {
         console.error('Reef Wallet extension not detected. Please install Reef Wallet.');
         return null;
       }
@@ -55,21 +75,11 @@ export const useReefContract = () => {
       console.log('🔵 Starting wallet connection...');
       setLoading(true);
 
-      // Check if Reef Wallet extension is installed
-      console.log('🔍 Checking for Reef Wallet extension...');
-      console.log('window.injectedWeb3:', window.injectedWeb3);
-
-      if (!window.injectedWeb3 || !window.injectedWeb3['reef']) {
+      const provider = await initProvider();
+      if (!provider) {
         alert('⚠️ Reef Wallet extension not detected!\n\nPlease install Reef Wallet from:\nhttps://chrome.google.com/webstore/detail/reef-wallet/mjgkpalnahacmhkikiommfiomhjipgjn');
         setLoading(false);
         return null;
-      }
-
-      console.log('✅ Reef Wallet extension detected!');
-
-      const provider = await initProvider();
-      if (!provider) {
-        throw new Error('Failed to initialize provider');
       }
 
       console.log('✅ Provider initialized');
