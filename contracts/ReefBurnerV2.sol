@@ -113,7 +113,7 @@ contract ReefBurnerV2 {
     event RoundStarted(uint256 roundNumber, uint256 startTime);
     event EmergencyPause(bool paused);
     event MinBurnAmountUpdated(uint256 newAmount);
-    event OwnershipTransferred(address indexed previous, address indexed new);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event RandomnessCommitted(uint256 blockNumber);
     event RandomnessRevealed(uint256 randomValue);
 
