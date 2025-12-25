@@ -96,16 +96,33 @@ export const useReefContract = () => {
       if (!window.injectedWeb3 || !window.injectedWeb3['reef']) {
         // Show different message based on device type
         if (isMobile()) {
-          alert('📱 Mobile Connection Required!\n\n' +
-                'To use this dApp on mobile:\n\n' +
-                '1. Download Reef Wallet app from:\n' +
-                '   • Google Play Store (Android)\n' +
-                '   • App Store (iOS)\n\n' +
-                '2. Open Reef Wallet app\n' +
-                '3. Tap the Browser icon (🌐)\n' +
-                '4. Enter URL: reef-burner-dapp.vercel.app\n' +
-                '5. Connect from within the app browser\n\n' +
-                'You MUST use the Reef Wallet in-app browser!');
+          // On mobile, try to open Reef Wallet app with deep link
+          const currentUrl = window.location.href;
+          const reefWalletDeepLink = `reefwallet://browser?url=${encodeURIComponent(currentUrl)}`;
+
+          // Try to open deep link
+          window.location.href = reefWalletDeepLink;
+
+          // Wait a bit to see if app opens
+          setTimeout(() => {
+            // If still here, show instructions
+            const userChoice = confirm(
+              '📱 Open in Reef Wallet App?\n\n' +
+              'Click OK to open Reef Wallet app, or Cancel for manual instructions.'
+            );
+
+            if (!userChoice) {
+              alert('📱 Manual Instructions:\n\n' +
+                    '1. Download Reef Wallet app:\n' +
+                    '   • Google Play (Android)\n' +
+                    '   • App Store (iOS)\n\n' +
+                    '2. Open Reef Wallet app\n' +
+                    '3. Look for DApp Browser or Browser\n' +
+                    '4. Visit: reef-burner-dapp.vercel.app\n' +
+                    '5. Connect your wallet\n\n' +
+                    'Or use MetaMask Mobile as alternative!');
+            }
+          }, 1500);
         } else {
           alert('⚠️ Reef Wallet Extension Required!\n\n' +
                 'Please install Reef Wallet extension:\n\n' +
