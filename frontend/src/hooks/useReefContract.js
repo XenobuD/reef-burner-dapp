@@ -96,22 +96,24 @@ export const useReefContract = () => {
 
       // Request account access from Reef Wallet
       const injectedWeb3 = window.injectedWeb3['reef'];
-      console.log('📢 Requesting account access...');
-      await injectedWeb3.enable('Reef Burner dApp');
+      console.log('📢 Requesting account access from Reef Wallet...');
 
-      console.log('🔍 Getting accounts...');
-      // Get accounts
-      const accounts = await injectedWeb3.accounts.get();
-      console.log('Accounts found:', accounts);
+      // Enable returns the selected account
+      const enableResponse = await injectedWeb3.enable('Reef Burner dApp');
+      console.log('Enable response:', enableResponse);
 
-      if (!accounts || accounts.length === 0) {
-        throw new Error('No accounts found');
+      // Get selected address from Reef Wallet
+      let address;
+      if (injectedWeb3.selectedAddress) {
+        address = injectedWeb3.selectedAddress;
+        console.log('✅ Using selectedAddress:', address);
+      } else if (enableResponse && enableResponse.length > 0) {
+        // Some versions return accounts array
+        address = enableResponse[0].address || enableResponse[0];
+        console.log('✅ Using address from enable response:', address);
+      } else {
+        throw new Error('No account selected in Reef Wallet');
       }
-
-      // Use first account
-      const selectedAccount = accounts[0];
-      const address = selectedAccount.address;
-      console.log('✅ Using account:', address);
 
       // Create signer from selected account
       const signer = provider.getSigner(address);
