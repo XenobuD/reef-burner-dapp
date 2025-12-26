@@ -649,6 +649,31 @@ export const useReefContract = () => {
     try {
       console.log('🎲 Revealing winner manually...');
 
+      // Check if we need to wait for 3 blocks
+      const randomCommitBlock = await contract.randomCommitBlock();
+      const currentBlock = await provider.api.query.system.number();
+      const currentBlockNumber = currentBlock.toNumber();
+      const commitBlockNumber = randomCommitBlock.toNumber();
+      const blocksToWait = commitBlockNumber + 3 - currentBlockNumber;
+
+      console.log(`📊 Commit block: ${commitBlockNumber}, Current block: ${currentBlockNumber}`);
+
+      if (blocksToWait > 0) {
+        console.log(`⏳ Waiting for ${blocksToWait} more blocks (~${blocksToWait * 15} seconds)...`);
+
+        // Wait for blocks to be mined
+        let waitedBlocks = 0;
+        while (waitedBlocks < blocksToWait) {
+          await new Promise(resolve => setTimeout(resolve, 15000)); // Wait 15 seconds per block
+          const newBlock = await provider.api.query.system.number();
+          const newBlockNumber = newBlock.toNumber();
+          waitedBlocks = newBlockNumber - currentBlockNumber;
+          console.log(`⏳ Block ${newBlockNumber} - ${blocksToWait - waitedBlocks} blocks remaining...`);
+        }
+
+        console.log('✅ 3 blocks have passed! Revealing winner now...');
+      }
+
       const tx = await contract.revealWinner({
         gasLimit: 800000
       });

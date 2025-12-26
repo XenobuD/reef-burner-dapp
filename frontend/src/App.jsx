@@ -135,6 +135,7 @@ function App() {
 
     try {
       setIsRevealing(true);
+      // revealWinner will now automatically wait for 3 blocks if needed
       await revealWinner();
       alert('🎉 Winner revealed successfully!');
       setIsRevealing(false);
@@ -314,7 +315,7 @@ function App() {
                     cursor: isRevealing ? 'not-allowed' : 'pointer'
                   }}
                 >
-                  {isRevealing ? '🔄 Revealing Winner...' : '🎲 Reveal Winner Now!'}
+                  {isRevealing ? '⏳ Waiting for blocks & revealing...' : '🎲 Reveal Winner Now!'}
                 </motion.button>
               )}
             </motion.div>
