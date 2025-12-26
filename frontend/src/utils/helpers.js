@@ -82,11 +82,12 @@ export const shortenAddress = (address) => {
 
 /**
  * Calculate bonus percentage based on amount
+ * TESTING PHASE: 5-8 REEF (V4 production will use 950-1500 REEF)
  */
 export const calculateBonus = (amount) => {
-  if (amount >= 1500) return 3;
-  if (amount >= 1200) return 2;
-  if (amount >= 1050) return 1;
+  if (amount >= 8) return 3;
+  if (amount >= 7) return 2;
+  if (amount >= 6) return 1;
   return 0;
 };
 

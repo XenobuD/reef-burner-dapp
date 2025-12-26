@@ -270,7 +270,7 @@ const AboutModal = ({ isOpen, onClose }) => {
               <div style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px', padding: '1rem' }}>
                 <p style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Winner Selection:</p>
                 <ul style={{ marginLeft: '1.5rem', lineHeight: '1.6' }}>
-                  <li><strong>Every 1 hour</strong> (testing) / <strong>3 days</strong> (production)</li>
+                  <li><strong>Every 5 minutes</strong> (testing) / <strong>3 days</strong> (production)</li>
                   <li><strong>Fully automated</strong> by smart contract</li>
                   <li><strong>Provably fair</strong> - weighted random selection</li>
                   <li><strong>Winner gets entire prize pool</strong> (27% of all burns)</li>

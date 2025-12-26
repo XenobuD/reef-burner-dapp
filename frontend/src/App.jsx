@@ -9,7 +9,7 @@ import AnimatedBackground from './components/AnimatedBackground';
 import AboutModal from './components/AboutModal';
 
 // 🔄 TOGGLE BETWEEN MOCK (local demo) AND REAL (blockchain)
-const USE_MOCK = false; // ✅ REAL MODE - connected to Reef Mainnet (TESTING: 5-8 REEF, 1 hour)
+const USE_MOCK = false; // ✅ REAL MODE - connected to Reef Mainnet (TESTING: 5-8 REEF, 5 minutes)
 
 import { useReefContract } from './hooks/useReefContract';
 import { useReefContractMock } from './hooks/useReefContractMock';
@@ -703,7 +703,7 @@ function App() {
         >
           <p>🔒 Fully Automated • 🎲 Fair Weighted Lottery • 🔥 65% Burned Forever</p>
           <p style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
-            ⚠️ TESTING MODE: Range: 5-8 REEF per transaction • Lottery every 1 hour
+            ⚠️ TESTING MODE: Range: 5-8 REEF per transaction • Lottery every 5 minutes
           </p>
           <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', opacity: 0.6 }}>
             Built on Reef Chain 🌊
