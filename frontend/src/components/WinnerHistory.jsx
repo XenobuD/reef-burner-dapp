@@ -7,6 +7,10 @@ const WinnerHistory = ({ winners, loading }) => {
     return `${address.substring(0, 10)}...${address.substring(address.length - 8)}`;
   };
 
+  const openReefScan = (address) => {
+    window.open(`https://reefscan.com/account/${address}`, '_blank');
+  };
+
   return (
     <motion.div
       className="card"
@@ -25,7 +29,11 @@ const WinnerHistory = ({ winners, loading }) => {
         🏆 Winner History
       </h2>
 
-      <div style={{ overflowX: 'auto' }}>
+      <div style={{
+        overflowX: 'auto',
+        maxHeight: '600px',
+        overflowY: 'auto'
+      }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '3rem 0' }}>
             <motion.div
@@ -121,12 +129,28 @@ const WinnerHistory = ({ winners, loading }) => {
                       </motion.div>
                     </td>
                     <td style={{ padding: '1.2rem' }}>
-                      <div style={{
-                        fontFamily: 'monospace',
-                        fontWeight: '600',
-                        fontSize: '1rem'
-                      }}>
-                        {formatAddress(winner.winnerAddress)}
+                      <div
+                        onClick={() => openReefScan(winner.winnerAddress)}
+                        style={{
+                          fontFamily: 'monospace',
+                          fontWeight: '600',
+                          fontSize: '1rem',
+                          cursor: 'pointer',
+                          color: 'var(--reef-pink)',
+                          textDecoration: 'none',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.color = 'var(--warning)';
+                          e.target.style.textDecoration = 'underline';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.color = 'var(--reef-pink)';
+                          e.target.style.textDecoration = 'none';
+                        }}
+                        title="Click to view on ReefScan"
+                      >
+                        {formatAddress(winner.winnerAddress)} 🔗
                       </div>
                     </td>
                     <td style={{ padding: '1.2rem', textAlign: 'right' }}>
@@ -166,6 +190,7 @@ const WinnerHistory = ({ winners, loading }) => {
       <style jsx>{`
         div::-webkit-scrollbar {
           height: 8px;
+          width: 8px;
         }
         div::-webkit-scrollbar-track {
           background: rgba(255, 255, 255, 0.05);
