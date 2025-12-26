@@ -29,6 +29,19 @@ const WinnerHistory = ({ winners, loading }) => {
         🏆 Winner History
       </h2>
 
+      {/* Testing notice */}
+      <div style={{
+        background: 'rgba(255, 107, 53, 0.1)',
+        border: '1px solid var(--warning)',
+        borderRadius: '8px',
+        padding: '0.75rem',
+        marginBottom: '1rem',
+        fontSize: '0.9rem',
+        color: 'var(--text-secondary)'
+      }}>
+        ⚠️ <strong>Testing Phase:</strong> Click winner addresses to view on ReefScan (may be slow during testing). Full explorer integration coming in V4!
+      </div>
+
       <div style={{
         overflowX: 'auto',
         maxHeight: '600px',

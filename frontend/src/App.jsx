@@ -92,7 +92,19 @@ function App() {
 
       // Detect Reef Chain "Module { index: 6, error: 2 }" = Insufficient Balance
       if (errorString.includes('Module') && errorString.includes('index: 6') && errorString.includes('error: 2')) {
-        errorMsg += '💰 Insufficient REEF balance!\n\nYou need REEF for:\n- Burn amount (' + burnAmount + ' REEF)\n- Gas fees (~0.5 REEF)\n\nTotal needed: ~' + (parseFloat(burnAmount) + 0.5) + ' REEF\n\nPlease add more REEF to your wallet.';
+        const burnAmountNum = parseFloat(burnAmount);
+        const gasEstimate = 1; // 1 REEF for safety
+        const totalNeeded = burnAmountNum + gasEstimate;
+        const recommended = Math.max(10, totalNeeded + 2); // At least 10 REEF, or total + 2 REEF buffer
+
+        errorMsg += '💰 Insufficient REEF balance!\n\n';
+        errorMsg += 'You need REEF for:\n';
+        errorMsg += '• Burn amount: ' + burnAmount + ' REEF\n';
+        errorMsg += '• Gas fees: ~' + gasEstimate + ' REEF\n';
+        errorMsg += '• Safety buffer: ~2 REEF\n\n';
+        errorMsg += '❌ Minimum needed: ' + totalNeeded.toFixed(1) + ' REEF\n';
+        errorMsg += '✅ Recommended: ' + recommended.toFixed(0) + ' REEF\n\n';
+        errorMsg += 'Please add more REEF to your wallet and try again.';
       } else if (errorString.includes('insufficient funds') || errorString.includes('InsufficientBalance')) {
         errorMsg += 'Insufficient REEF balance. Make sure you have enough REEF to cover the burn amount + gas fees (~0.5 REEF extra).';
       } else if (errorString.includes('user rejected') || errorString.includes('rejected')) {
