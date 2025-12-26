@@ -14,6 +14,34 @@ const USE_MOCK = false; // ✅ REAL MODE - connected to Reef Mainnet (TESTING: 5
 import { useReefContract } from './hooks/useReefContract';
 import { useReefContractMock } from './hooks/useReefContractMock';
 
+// Error helper functions (more reliable than string matching alone)
+const isUserRejected = (error) => {
+  const errorString = error.toString() + (error.message || '');
+  // Check EIP-1193 error code for user rejection
+  if (error.code === 4001 || error.code === 'ACTION_REJECTED') return true;
+  // Fallback to string matching
+  return errorString.includes('user rejected') || errorString.includes('User rejected');
+};
+
+const isTransactionPending = (error) => {
+  const errorString = error.toString() + (error.message || '');
+  return (
+    errorString.includes('Priority is too low') ||
+    errorString.includes('transaction underpriced') ||
+    errorString.includes('replacement underpriced')
+  );
+};
+
+const isInsufficientBalance = (error) => {
+  const errorString = error.toString() + (error.message || '');
+  // Reef Chain format: Module { index: 6, error: 2 }
+  return (
+    (errorString.includes('Module') && errorString.includes('index: 6') && errorString.includes('error: 2')) ||
+    errorString.includes('insufficient funds') ||
+    errorString.includes('InsufficientBalance')
+  );
+};
+
 function App() {
   // Use MOCK for local testing or REAL for blockchain
   const contractHook = USE_MOCK ? useReefContractMock : useReefContract;
@@ -84,14 +112,20 @@ function App() {
     } catch (error) {
       console.error('❌ App: Burn failed:', error);
 
-      // Convert error to string for better detection
+      // User rejected transaction - ignore silently
+      if (isUserRejected(error)) {
+        console.log('User cancelled transaction');
+        return;
+      }
+
+      // Convert error to string for fallback string matching
       const errorString = error.toString() + (error.message || '');
 
       // User-friendly error messages
       let errorMsg = '❌ Burn failed!\n\n';
 
-      // Detect Reef Chain "Module { index: 6, error: 2 }" = Insufficient Balance
-      if (errorString.includes('Module') && errorString.includes('index: 6') && errorString.includes('error: 2')) {
+      // Check for insufficient balance
+      if (isInsufficientBalance(error)) {
         errorMsg += '💰 Insufficient REEF balance!\n\n';
         errorMsg += '⚠️ MINIMUM REQUIRED: 1500-2000 REEF in your wallet\n\n';
         errorMsg += 'Why so much?\n';
@@ -103,10 +137,6 @@ function App() {
         errorMsg += '   verifies you have sufficient total balance (1500-2000 REEF).\n\n';
         errorMsg += '📊 REEF price: ~$0.00014 (2000 REEF = ~$0.28)\n\n';
         errorMsg += 'Please add more REEF to your wallet and try again.';
-      } else if (errorString.includes('insufficient funds') || errorString.includes('InsufficientBalance')) {
-        errorMsg += 'Insufficient REEF balance. Make sure you have enough REEF to cover the burn amount + gas fees (~0.5 REEF extra).';
-      } else if (errorString.includes('user rejected') || errorString.includes('rejected')) {
-        errorMsg += 'Transaction was rejected in your wallet.';
       } else if (errorString.includes('Max participants')) {
         errorMsg += 'Maximum participants reached for this round. Please wait for the next round.';
       } else if (errorString.includes('Amount below minimum')) {
@@ -129,30 +159,34 @@ function App() {
       return;
     }
 
+    // Prevent double-clicks
+    if (isTriggering) {
+      console.log('⚠️ Trigger already in progress, ignoring click');
+      return;
+    }
+
     try {
       setIsTriggering(true);
       await triggerLottery();
-      alert('�� Lottery triggered successfully! Check the winner below.');
-      setIsTriggering(false);
+      alert('✅ Lottery triggered successfully! Check the winner below.');
     } catch (error) {
       console.error('Trigger failed:', error);
-      setIsTriggering(false); // Reset immediately
-
-      // Convert error to string for checking (error.message may be undefined)
-      const errorString = error.toString() + (error.message || '');
 
       // User cancelled transaction - ignore silently
-      if (errorString.includes('user rejected') || errorString.includes('User rejected')) {
+      if (isUserRejected(error)) {
         console.log('User cancelled transaction');
         return;
       }
 
-      // Priority too low - user clicked twice too fast, show friendly message
-      if (errorString.includes('Priority is too low')) {
-        console.log('⚠️ Transaction already submitted, ignoring duplicate click');
-        alert('⏳ Transaction already in progress!\n\nPlease wait 10-15 seconds for the current block to finish processing.');
+      // Transaction may already be pending or fee too low
+      if (isTransactionPending(error)) {
+        console.log('⚠️ Transaction may already be pending or fee too low');
+        alert('⏳ Transaction may already be pending!\n\nThis can happen if:\n• You clicked too quickly (transaction already submitted)\n• Network fee is too low\n\nPlease wait 10-15 seconds and try again if needed.');
         return;
       }
+
+      // Convert error to string for remaining checks
+      const errorString = error.toString() + (error.message || '');
 
       // Handle "Must commit first" error (round not ended yet)
       if (errorString.includes('Must commit first')) {
@@ -173,6 +207,8 @@ function App() {
       }
 
       alert(`❌ Failed to trigger lottery: ${error.message}`);
+    } finally {
+      setIsTriggering(false);
     }
   };
 
@@ -182,31 +218,35 @@ function App() {
       return;
     }
 
+    // Prevent double-clicks
+    if (isRevealing) {
+      console.log('⚠️ Reveal already in progress, ignoring click');
+      return;
+    }
+
     try {
       setIsRevealing(true);
       // revealWinner will now automatically wait for 3 blocks if needed
       await revealWinner();
       alert('🎉 Winner revealed successfully!');
-      setIsRevealing(false);
     } catch (error) {
       console.error('Reveal failed:', error);
-      setIsRevealing(false); // Reset immediately
-
-      // Convert error to string for checking (error.message may be undefined)
-      const errorString = error.toString() + (error.message || '');
 
       // User cancelled transaction - ignore silently
-      if (errorString.includes('user rejected') || errorString.includes('User rejected')) {
+      if (isUserRejected(error)) {
         console.log('User cancelled transaction');
         return;
       }
 
-      // Priority too low - user clicked twice too fast, show friendly message
-      if (errorString.includes('Priority is too low')) {
-        console.log('⚠️ Transaction already submitted, ignoring duplicate click');
-        alert('⏳ Transaction already in progress!\n\nPlease wait 10-15 seconds for the current block to finish processing.');
+      // Transaction may already be pending or fee too low
+      if (isTransactionPending(error)) {
+        console.log('⚠️ Transaction may already be pending or fee too low');
+        alert('⏳ Transaction may already be pending!\n\nThis can happen if:\n• You clicked too quickly (transaction already submitted)\n• Network fee is too low\n\nPlease wait 10-15 seconds and try again if needed.');
         return;
       }
+
+      // Convert error to string for remaining checks
+      const errorString = error.toString() + (error.message || '');
 
       // Must commit first - no randomness committed yet
       if (errorString.includes('Must commit first')) {
@@ -222,6 +262,8 @@ function App() {
       }
 
       alert(`❌ Failed to reveal winner: ${error.message}`);
+    } finally {
+      setIsRevealing(false);
     }
   };
 
@@ -231,23 +273,35 @@ function App() {
       return;
     }
 
+    // Prevent double-clicks
+    if (isClaiming) {
+      console.log('⚠️ Claim already in progress, ignoring click');
+      return;
+    }
+
     try {
       setIsClaiming(true);
       await claimPrize();
       alert('💰 Prize claimed and sent to winner successfully!');
-      setIsClaiming(false);
     } catch (error) {
       console.error('Claim failed:', error);
-      setIsClaiming(false); // Reset state immediately on error
 
-      // User-friendly error messages
-      if (error.message?.includes('user rejected') || error.message?.includes('User rejected')) {
-        // User closed wallet popup - don't show error
+      // User cancelled transaction - ignore silently
+      if (isUserRejected(error)) {
         console.log('User cancelled transaction');
         return;
       }
 
+      // Transaction may already be pending or fee too low
+      if (isTransactionPending(error)) {
+        console.log('⚠️ Transaction may already be pending or fee too low');
+        alert('⏳ Transaction may already be pending!\n\nThis can happen if:\n• You clicked too quickly (transaction already submitted)\n• Network fee is too low\n\nPlease wait 10-15 seconds and try again if needed.');
+        return;
+      }
+
       alert(`❌ Failed to claim prize: ${error.message}`);
+    } finally {
+      setIsClaiming(false);
     }
   };
 
