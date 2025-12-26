@@ -523,10 +523,26 @@ export const useReefContract = () => {
 
       // STEP 2: Wait 3 blocks then reveal winner
       console.log('⏳ Waiting 3 blocks for randomness to mature...');
-      console.log('(This will take ~50 seconds - please wait!)');
+      console.log('(Checking every 3 seconds for new blocks...)');
 
-      // Wait ~50 seconds (Reef has ~15 second block time, 3 blocks = ~45 seconds + buffer)
-      await new Promise(resolve => setTimeout(resolve, 50000));
+      // Get current block and calculate target block
+      const currentBlock = await provider.getBlockNumber();
+      const targetBlock = currentBlock + 3;
+      console.log(`📊 Current block: ${currentBlock}, Target block: ${targetBlock}`);
+
+      // Poll for target block (check every 3 seconds instead of waiting 50s)
+      while (true) {
+        const latestBlock = await provider.getBlockNumber();
+        console.log(`🔍 Current block: ${latestBlock}/${targetBlock}`);
+
+        if (latestBlock >= targetBlock) {
+          console.log('✅ Target block reached! Ready to reveal.');
+          break;
+        }
+
+        // Wait 3 seconds before checking again
+        await new Promise(resolve => setTimeout(resolve, 3000));
+      }
 
       console.log('🎲 Step 2/2: Revealing winner...');
       const tx2 = await contract.revealWinner({
@@ -695,9 +711,9 @@ export const useReefContract = () => {
           break;
         }
 
-        // Wait 15 seconds for next block
-        console.log(`⏳ Waiting for ${blocksRemaining} more blocks (~${blocksRemaining * 15} seconds)...`);
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        // Wait 5 seconds then check again (faster polling instead of waiting full block time)
+        console.log(`⏳ Waiting for ${blocksRemaining} more blocks... (checking every 5 seconds)`);
+        await new Promise(resolve => setTimeout(resolve, 5000));
       }
 
       const tx = await contract.revealWinner({
