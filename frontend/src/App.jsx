@@ -111,32 +111,42 @@ function App() {
     try {
       setIsTriggering(true);
       await triggerLottery();
-      alert('🎉 Lottery triggered successfully! Check the winner below.');
+      alert('�� Lottery triggered successfully! Check the winner below.');
       setIsTriggering(false);
     } catch (error) {
       console.error('Trigger failed:', error);
       setIsTriggering(false); // Reset immediately
 
-      // User-friendly error messages
-      if (error.message?.includes('user rejected') || error.message?.includes('User rejected')) {
+      // Convert error to string for checking (error.message may be undefined)
+      const errorString = error.toString() + (error.message || '');
+
+      // User cancelled transaction - ignore silently
+      if (errorString.includes('user rejected') || errorString.includes('User rejected')) {
         console.log('User cancelled transaction');
         return;
       }
 
+      // Priority too low - user clicked twice too fast, show friendly message
+      if (errorString.includes('Priority is too low')) {
+        console.log('⚠️ Transaction already submitted, ignoring duplicate click');
+        alert('⏳ Transaction already in progress!\n\nPlease wait 10-15 seconds for the current block to finish processing.');
+        return;
+      }
+
       // Handle "Must commit first" error (round not ended yet)
-      if (error.message?.includes('Must commit first')) {
+      if (errorString.includes('Must commit first')) {
         alert('⏰ Round not finished yet!\n\nPlease wait until the round timer reaches 0:00, then try again.');
         return;
       }
 
       // Handle "Round not finished" error
-      if (error.message?.includes('Round not finished')) {
+      if (errorString.includes('Round not finished')) {
         alert('⏰ Round still in progress!\n\nPlease wait for the 5-minute round to complete before triggering the lottery.');
         return;
       }
 
       // Handle "Already committed" error
-      if (error.message?.includes('Already committed')) {
+      if (errorString.includes('Already committed')) {
         alert('⚠️ Lottery already triggered!\n\nPlease click "Reveal Winner" button to complete the draw.');
         return;
       }
