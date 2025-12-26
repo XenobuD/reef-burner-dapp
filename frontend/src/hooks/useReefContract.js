@@ -578,10 +578,11 @@ export const useReefContract = () => {
 
     fetchAllData();
 
-    // Refresh every 10 seconds (more frequent to catch round end quickly)
+    // Refresh every 30 seconds (reduced from 10s to avoid annoying users)
+    // Data updates automatically after user actions (burn, trigger, reveal, claim)
     const interval = setInterval(() => {
       fetchAllData();
-    }, 10000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [readContract, fetchAllData]);
