@@ -204,6 +204,13 @@ function App() {
         return;
       }
 
+      // Transaction is outdated - someone else already revealed
+      if (errorString.includes('Transaction is outdated') || errorString.includes('1010')) {
+        console.log('✅ Winner already revealed by someone else');
+        alert('✅ Winner already revealed!\n\nSomeone else revealed the winner while you were clicking. You can now claim the prize below!');
+        return;
+      }
+
       alert(`❌ Failed to reveal winner: ${error.message}`);
     }
   };
