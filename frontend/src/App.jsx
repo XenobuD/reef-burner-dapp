@@ -117,9 +117,27 @@ function App() {
       console.error('Trigger failed:', error);
       setIsTriggering(false); // Reset immediately
 
-      // Don't show alert if user just cancelled
+      // User-friendly error messages
       if (error.message?.includes('user rejected') || error.message?.includes('User rejected')) {
         console.log('User cancelled transaction');
+        return;
+      }
+
+      // Handle "Must commit first" error (round not ended yet)
+      if (error.message?.includes('Must commit first')) {
+        alert('⏰ Round not finished yet!\n\nPlease wait until the round timer reaches 0:00, then try again.');
+        return;
+      }
+
+      // Handle "Round not finished" error
+      if (error.message?.includes('Round not finished')) {
+        alert('⏰ Round still in progress!\n\nPlease wait for the 5-minute round to complete before triggering the lottery.');
+        return;
+      }
+
+      // Handle "Already committed" error
+      if (error.message?.includes('Already committed')) {
+        alert('⚠️ Lottery already triggered!\n\nPlease click "Reveal Winner" button to complete the draw.');
         return;
       }
 
