@@ -7,10 +7,6 @@ const WinnerHistory = ({ winners, loading }) => {
     return `${address.substring(0, 10)}...${address.substring(address.length - 8)}`;
   };
 
-  const openReefScan = (address) => {
-    window.open(`https://reef.subscan.io/account/${address}`, '_blank');
-  };
-
   return (
     <motion.div
       className="card"
@@ -39,7 +35,7 @@ const WinnerHistory = ({ winners, loading }) => {
         fontSize: '0.9rem',
         color: 'var(--text-secondary)'
       }}>
-        ⚠️ <strong>Testing Phase:</strong> Click winner addresses 🔗 to view on Subscan explorer. Full integration coming in V4!
+        ⚠️ <strong>Testing Phase:</strong> Hover over winner addresses to see full address. Explorer integration coming in V4!
       </div>
 
       <div style={{
@@ -143,27 +139,15 @@ const WinnerHistory = ({ winners, loading }) => {
                     </td>
                     <td style={{ padding: '1.2rem' }}>
                       <div
-                        onClick={() => openReefScan(winner.winnerAddress)}
                         style={{
                           fontFamily: 'monospace',
                           fontWeight: '600',
                           fontSize: '1rem',
-                          cursor: 'pointer',
-                          color: 'var(--reef-pink)',
-                          textDecoration: 'none',
-                          transition: 'all 0.2s ease'
+                          color: 'var(--reef-pink)'
                         }}
-                        onMouseEnter={(e) => {
-                          e.target.style.color = 'var(--warning)';
-                          e.target.style.textDecoration = 'underline';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.color = 'var(--reef-pink)';
-                          e.target.style.textDecoration = 'none';
-                        }}
-                        title="Click to view on Subscan"
+                        title={winner.winnerAddress}
                       >
-                        {formatAddress(winner.winnerAddress)} 🔗
+                        {formatAddress(winner.winnerAddress)}
                       </div>
                     </td>
                     <td style={{ padding: '1.2rem', textAlign: 'right' }}>
