@@ -92,18 +92,16 @@ function App() {
 
       // Detect Reef Chain "Module { index: 6, error: 2 }" = Insufficient Balance
       if (errorString.includes('Module') && errorString.includes('index: 6') && errorString.includes('error: 2')) {
-        const burnAmountNum = parseFloat(burnAmount);
-        const gasEstimate = 1; // 1 REEF for safety
-        const totalNeeded = burnAmountNum + gasEstimate;
-        const recommended = Math.max(10, totalNeeded + 2); // At least 10 REEF, or total + 2 REEF buffer
-
         errorMsg += '💰 Insufficient REEF balance!\n\n';
-        errorMsg += 'You need REEF for:\n';
-        errorMsg += '• Burn amount: ' + burnAmount + ' REEF\n';
-        errorMsg += '• Gas fees: ~' + gasEstimate + ' REEF\n';
-        errorMsg += '• Safety buffer: ~2 REEF\n\n';
-        errorMsg += '❌ Minimum needed: ' + totalNeeded.toFixed(1) + ' REEF\n';
-        errorMsg += '✅ Recommended: ' + recommended.toFixed(0) + ' REEF\n\n';
+        errorMsg += '⚠️ MINIMUM REQUIRED: 1500-2000 REEF in your wallet\n\n';
+        errorMsg += 'Why so much?\n';
+        errorMsg += '• Burn amount: Only 5-8 REEF (testing phase)\n';
+        errorMsg += '• Blockchain verification: Requires 1500+ REEF minimum balance\n';
+        errorMsg += '• Gas fees: ~1-2 REEF\n';
+        errorMsg += '• Recommended: 2000 REEF for safety\n\n';
+        errorMsg += '💡 Even though you only burn 5-8 REEF, the smart contract\n';
+        errorMsg += '   verifies you have sufficient total balance (1500-2000 REEF).\n\n';
+        errorMsg += '📊 REEF price: ~$0.00014 (2000 REEF = ~$0.28)\n\n';
         errorMsg += 'Please add more REEF to your wallet and try again.';
       } else if (errorString.includes('insufficient funds') || errorString.includes('InsufficientBalance')) {
         errorMsg += 'Insufficient REEF balance. Make sure you have enough REEF to cover the burn amount + gas fees (~0.5 REEF extra).';
