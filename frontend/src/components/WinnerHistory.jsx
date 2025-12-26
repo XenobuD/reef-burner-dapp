@@ -8,7 +8,7 @@ const WinnerHistory = ({ winners, loading }) => {
   };
 
   const openReefScan = (address) => {
-    window.open(`https://reefscan.com/account/${address}`, '_blank');
+    window.open(`https://reef.subscan.io/account/${address}`, '_blank');
   };
 
   return (
@@ -39,7 +39,7 @@ const WinnerHistory = ({ winners, loading }) => {
         fontSize: '0.9rem',
         color: 'var(--text-secondary)'
       }}>
-        ⚠️ <strong>Testing Phase:</strong> Click winner addresses 🔗 to view on ReefScan (may be slow during testing). Full explorer integration coming in V4!
+        ⚠️ <strong>Testing Phase:</strong> Click winner addresses 🔗 to view on Subscan explorer. Full integration coming in V4!
       </div>
 
       <div style={{
@@ -161,7 +161,7 @@ const WinnerHistory = ({ winners, loading }) => {
                           e.target.style.color = 'var(--reef-pink)';
                           e.target.style.textDecoration = 'none';
                         }}
-                        title="Click to view on ReefScan"
+                        title="Click to view on Subscan"
                       >
                         {formatAddress(winner.winnerAddress)} 🔗
                       </div>
