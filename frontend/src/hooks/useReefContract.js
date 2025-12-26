@@ -649,29 +649,36 @@ export const useReefContract = () => {
     try {
       console.log('🎲 Revealing winner manually...');
 
-      // Check if we need to wait for 3 blocks
+      // Check if we need to wait for 3 blocks + 1 extra for safety
       const randomCommitBlock = await contract.randomCommitBlock();
       const currentBlock = await provider.api.query.system.number();
       const currentBlockNumber = currentBlock.toNumber();
       const commitBlockNumber = randomCommitBlock.toNumber();
-      const blocksToWait = commitBlockNumber + 3 - currentBlockNumber;
+      const requiredBlock = commitBlockNumber + 3;
+      const blocksToWait = requiredBlock - currentBlockNumber;
 
-      console.log(`📊 Commit block: ${commitBlockNumber}, Current block: ${currentBlockNumber}`);
+      console.log(`📊 Commit block: ${commitBlockNumber}, Current block: ${currentBlockNumber}, Required: ${requiredBlock}`);
 
       if (blocksToWait > 0) {
         console.log(`⏳ Waiting for ${blocksToWait} more blocks (~${blocksToWait * 15} seconds)...`);
 
         // Wait for blocks to be mined
-        let waitedBlocks = 0;
-        while (waitedBlocks < blocksToWait) {
+        while (true) {
           await new Promise(resolve => setTimeout(resolve, 15000)); // Wait 15 seconds per block
           const newBlock = await provider.api.query.system.number();
           const newBlockNumber = newBlock.toNumber();
-          waitedBlocks = newBlockNumber - currentBlockNumber;
-          console.log(`⏳ Block ${newBlockNumber} - ${blocksToWait - waitedBlocks} blocks remaining...`);
-        }
+          const remaining = requiredBlock - newBlockNumber;
 
-        console.log('✅ 3 blocks have passed! Revealing winner now...');
+          console.log(`⏳ Block ${newBlockNumber} - ${remaining} blocks remaining...`);
+
+          // Wait until we're AT LEAST 1 block past the required block (safety margin)
+          if (newBlockNumber >= requiredBlock + 1) {
+            console.log('✅ Safe to reveal! (3+ blocks have passed)');
+            break;
+          }
+        }
+      } else {
+        console.log('✅ Already past 3 blocks, safe to reveal immediately');
       }
 
       const tx = await contract.revealWinner({
