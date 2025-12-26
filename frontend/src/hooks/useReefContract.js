@@ -171,8 +171,8 @@ export const useReefContract = () => {
       const allAccounts = await web3Accounts();
       console.log('✅ Found accounts:', allAccounts);
 
-      if (allAccounts.length === 0) {
-        throw new Error('No accounts found in Reef Wallet. Please create an account first.');
+      if (!allAccounts || allAccounts.length === 0) {
+        throw new Error('No accounts found in Reef Wallet. Please create an account first or grant permission to this dApp.');
       }
 
       // Store all available accounts
