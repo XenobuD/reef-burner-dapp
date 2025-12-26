@@ -331,8 +331,8 @@ function App() {
           />
         </motion.div>
 
-        {/* Show reveal button if randomness committed but winner not revealed */}
-        {randomnessStatus.committed && account && (
+        {/* Show reveal button if randomness committed but winner not revealed AND there are participants */}
+        {randomnessStatus.committed && account && participants.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
