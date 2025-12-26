@@ -486,6 +486,7 @@ export const useReefContract = () => {
       console.log('🎲 Starting 2-step lottery trigger process...');
 
       // STEP 1: Commit randomness
+      let commitSuccess = false;
       try {
         console.log('📝 Step 1/2: Committing randomness...');
         const tx1 = await contract.triggerRoundEnd({
@@ -494,8 +495,26 @@ export const useReefContract = () => {
         console.log('Transaction 1 sent:', tx1.hash);
         await tx1.wait();
         console.log('✅ Randomness committed!');
+        commitSuccess = true;
       } catch (error) {
-        console.log('⚠️ Randomness already committed:', error.message);
+        console.log('⚠️ Commit error:', error.message);
+
+        // If round not finished, throw immediately - don't continue
+        if (error.message?.includes('Round not finished') ||
+            error.message?.includes('Must commit first')) {
+          throw error; // Stop here, don't try to reveal
+        }
+
+        // If already committed, continue to reveal
+        if (error.message?.includes('Already committed')) {
+          console.log('✅ Already committed, continuing to reveal...');
+          commitSuccess = true;
+        }
+      }
+
+      // Only continue if commit was successful or already committed
+      if (!commitSuccess) {
+        throw new Error('Failed to commit randomness');
       }
 
       // STEP 2: Wait 3 blocks then reveal winner
@@ -524,13 +543,7 @@ export const useReefContract = () => {
       return receipt;
     } catch (error) {
       console.error('Error triggering lottery:', error);
-
-      // Check if it's "Round not finished yet" error
-      if (error.message.includes('Round not finished')) {
-        throw new Error('Lottery round is not finished yet. Wait for the timer to expire.');
-      }
-
-      throw error;
+      throw error; // Re-throw to be handled by UI
     }
   };
 
