@@ -497,16 +497,20 @@ export const useReefContract = () => {
         console.log('✅ Randomness committed!');
         commitSuccess = true;
       } catch (error) {
-        console.log('⚠️ Commit error:', error.message);
+        console.log('⚠️ Commit error:', error);
+
+        // Convert error to string for checking
+        const errorString = error.toString() + (error.message || '');
 
         // If round not finished, throw immediately - don't continue
-        if (error.message?.includes('Round not finished') ||
-            error.message?.includes('Must commit first')) {
+        if (errorString.includes('Round not finished') ||
+            errorString.includes('Must commit first')) {
+          console.log('❌ Round not ready, stopping execution');
           throw error; // Stop here, don't try to reveal
         }
 
         // If already committed, continue to reveal
-        if (error.message?.includes('Already committed')) {
+        if (errorString.includes('Already committed')) {
           console.log('✅ Already committed, continuing to reveal...');
           commitSuccess = true;
         }
