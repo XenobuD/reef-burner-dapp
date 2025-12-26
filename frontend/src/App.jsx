@@ -171,9 +171,25 @@ function App() {
       console.error('Reveal failed:', error);
       setIsRevealing(false); // Reset immediately
 
-      // Don't show alert if user just cancelled
-      if (error.message?.includes('user rejected') || error.message?.includes('User rejected')) {
+      // Convert error to string for checking (error.message may be undefined)
+      const errorString = error.toString() + (error.message || '');
+
+      // User cancelled transaction - ignore silently
+      if (errorString.includes('user rejected') || errorString.includes('User rejected')) {
         console.log('User cancelled transaction');
+        return;
+      }
+
+      // Priority too low - user clicked twice too fast, show friendly message
+      if (errorString.includes('Priority is too low')) {
+        console.log('⚠️ Transaction already submitted, ignoring duplicate click');
+        alert('⏳ Transaction already in progress!\n\nPlease wait 10-15 seconds for the current block to finish processing.');
+        return;
+      }
+
+      // Must commit first - no randomness committed yet
+      if (errorString.includes('Must commit first')) {
+        alert('⚠️ No lottery to reveal!\n\nPlease click "Trigger Lottery" button first to start the draw.');
         return;
       }
 

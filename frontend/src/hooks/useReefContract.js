@@ -670,6 +670,12 @@ export const useReefContract = () => {
       const randomCommitBlock = await contract.randomCommitBlock();
       const commitBlockNumber = randomCommitBlock.toNumber();
 
+      // Check if randomness has been committed (commitBlock > 0)
+      if (commitBlockNumber === 0) {
+        console.log('❌ No randomness committed yet!');
+        throw new Error('Must commit first');
+      }
+
       // We need to be at commit + 4 to be 100% safe (3 required + 1 safety margin)
       const safeBlock = commitBlockNumber + 4;
 
