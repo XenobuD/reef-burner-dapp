@@ -27,7 +27,7 @@ module.exports = {
       url: "https://rpc.reefscan.com",
       seeds: {
         // Seed phrase removed for security
-        // V2 FAST TEST contract (5 min rounds): 0x82EE1373C213D291BD4839C6917F675cAD4ab469
+        // V3 ULTRA SECURE contract (5 min rounds): 0xAa349830e524ccbbA19c370FE0C6fd2Dbe8BeeDE
       },
       scanUrl: "https://reefscan.com"
     }
