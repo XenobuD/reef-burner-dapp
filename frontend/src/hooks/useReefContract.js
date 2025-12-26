@@ -525,15 +525,16 @@ export const useReefContract = () => {
       console.log('⏳ Waiting 3 blocks for randomness to mature...');
       console.log('(Checking every 3 seconds for new blocks...)');
 
-      // Get current block and calculate target block
+      // Get current block and calculate target block (need +4 because contract requires block.number > commitBlock + 3)
       const currentBlock = await provider.getBlockNumber();
-      const targetBlock = currentBlock + 3;
-      console.log(`📊 Current block: ${currentBlock}, Target block: ${targetBlock}`);
+      const targetBlock = currentBlock + 4;
+      console.log(`📊 Current block: ${currentBlock}, Target block: ${targetBlock} (need 4+ blocks for reveal)`);
 
       // Poll for target block (check every 3 seconds instead of waiting 50s)
       while (true) {
         const latestBlock = await provider.getBlockNumber();
-        console.log(`🔍 Current block: ${latestBlock}/${targetBlock}`);
+        const blocksRemaining = targetBlock - latestBlock;
+        console.log(`🔍 Current block: ${latestBlock}/${targetBlock} (${blocksRemaining} blocks remaining)`);
 
         if (latestBlock >= targetBlock) {
           console.log('✅ Target block reached! Ready to reveal.');
