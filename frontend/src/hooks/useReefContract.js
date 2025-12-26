@@ -651,34 +651,29 @@ export const useReefContract = () => {
 
       // Check if we need to wait for 3 blocks + 1 extra for safety
       const randomCommitBlock = await contract.randomCommitBlock();
-      const currentBlock = await provider.api.query.system.number();
-      const currentBlockNumber = currentBlock.toNumber();
       const commitBlockNumber = randomCommitBlock.toNumber();
-      const requiredBlock = commitBlockNumber + 3;
-      const blocksToWait = requiredBlock - currentBlockNumber;
 
-      console.log(`📊 Commit block: ${commitBlockNumber}, Current block: ${currentBlockNumber}, Required: ${requiredBlock}`);
+      // We need to be at commit + 4 to be 100% safe (3 required + 1 safety margin)
+      const safeBlock = commitBlockNumber + 4;
 
-      if (blocksToWait > 0) {
-        console.log(`⏳ Waiting for ${blocksToWait} more blocks (~${blocksToWait * 15} seconds)...`);
+      console.log(`📊 Commit block: ${commitBlockNumber}, Safe reveal block: ${safeBlock}`);
 
-        // Wait for blocks to be mined
-        while (true) {
-          await new Promise(resolve => setTimeout(resolve, 15000)); // Wait 15 seconds per block
-          const newBlock = await provider.api.query.system.number();
-          const newBlockNumber = newBlock.toNumber();
-          const remaining = requiredBlock - newBlockNumber;
+      // Always check in a loop until we reach safe block
+      while (true) {
+        const currentBlock = await provider.api.query.system.number();
+        const currentBlockNumber = currentBlock.toNumber();
+        const blocksRemaining = safeBlock - currentBlockNumber;
 
-          console.log(`⏳ Block ${newBlockNumber} - ${remaining} blocks remaining...`);
+        console.log(`⏳ Current block: ${currentBlockNumber}, blocks until safe: ${blocksRemaining}`);
 
-          // Wait until we're AT LEAST 1 block past the required block (safety margin)
-          if (newBlockNumber >= requiredBlock + 1) {
-            console.log('✅ Safe to reveal! (3+ blocks have passed)');
-            break;
-          }
+        if (currentBlockNumber >= safeBlock) {
+          console.log('✅ Safe to reveal! (4+ blocks have passed)');
+          break;
         }
-      } else {
-        console.log('✅ Already past 3 blocks, safe to reveal immediately');
+
+        // Wait 15 seconds for next block
+        console.log(`⏳ Waiting for ${blocksRemaining} more blocks (~${blocksRemaining * 15} seconds)...`);
+        await new Promise(resolve => setTimeout(resolve, 15000));
       }
 
       const tx = await contract.revealWinner({
