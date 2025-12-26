@@ -84,16 +84,27 @@ function App() {
     } catch (error) {
       console.error('❌ App: Burn failed:', error);
 
+      // Convert error to string for better detection
+      const errorString = error.toString() + (error.message || '');
+
       // User-friendly error messages
       let errorMsg = '❌ Burn failed!\n\n';
-      if (error.message.includes('insufficient funds')) {
-        errorMsg += 'Insufficient REEF balance. Make sure you have enough REEF to cover the burn amount + gas fees.';
-      } else if (error.message.includes('user rejected') || error.message.includes('rejected')) {
+
+      // Detect Reef Chain "Module { index: 6, error: 2 }" = Insufficient Balance
+      if (errorString.includes('Module') && errorString.includes('index: 6') && errorString.includes('error: 2')) {
+        errorMsg += '💰 Insufficient REEF balance!\n\nYou need REEF for:\n- Burn amount (' + burnAmount + ' REEF)\n- Gas fees (~0.5 REEF)\n\nTotal needed: ~' + (parseFloat(burnAmount) + 0.5) + ' REEF\n\nPlease add more REEF to your wallet.';
+      } else if (errorString.includes('insufficient funds') || errorString.includes('InsufficientBalance')) {
+        errorMsg += 'Insufficient REEF balance. Make sure you have enough REEF to cover the burn amount + gas fees (~0.5 REEF extra).';
+      } else if (errorString.includes('user rejected') || errorString.includes('rejected')) {
         errorMsg += 'Transaction was rejected in your wallet.';
-      } else if (error.message.includes('Max participants')) {
+      } else if (errorString.includes('Max participants')) {
         errorMsg += 'Maximum participants reached for this round. Please wait for the next round.';
+      } else if (errorString.includes('Amount below minimum')) {
+        errorMsg += 'Burn amount is below minimum (5 REEF). Please increase the amount.';
+      } else if (errorString.includes('Amount exceeds maximum')) {
+        errorMsg += 'Burn amount exceeds maximum (8 REEF for testing). Please reduce the amount.';
       } else {
-        errorMsg += error.message;
+        errorMsg += error.message || 'Unknown error occurred. Please check console for details.';
       }
 
       alert(errorMsg);
