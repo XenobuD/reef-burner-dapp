@@ -487,14 +487,17 @@ export const useReefContract = () => {
 
       // STEP 1: Commit randomness
       let commitSuccess = false;
+      let commitBlockNumber = null;
+
       try {
         console.log('📝 Step 1/2: Committing randomness...');
         const tx1 = await contract.triggerRoundEnd({
           gasLimit: 500000
         });
         console.log('Transaction 1 sent:', tx1.hash);
-        await tx1.wait();
-        console.log('✅ Randomness committed!');
+        const commitReceipt = await tx1.wait();
+        commitBlockNumber = commitReceipt.blockNumber;
+        console.log(`✅ Randomness committed at block ${commitBlockNumber}`);
         commitSuccess = true;
       } catch (error) {
         console.log('⚠️ Commit error:', error);
@@ -509,29 +512,41 @@ export const useReefContract = () => {
           throw error; // Stop here, don't try to reveal
         }
 
-        // If already committed, continue to reveal
+        // If already committed, get commit block from contract
         if (errorString.includes('Already committed')) {
-          console.log('✅ Already committed, continuing to reveal...');
+          console.log('✅ Already committed, fetching commit block...');
+          commitBlockNumber = await contract.randomCommitBlock();
+          commitBlockNumber = commitBlockNumber.toNumber();
+          console.log(`📊 Commit block from contract: ${commitBlockNumber}`);
           commitSuccess = true;
         }
       }
 
       // Only continue if commit was successful or already committed
-      if (!commitSuccess) {
-        throw new Error('Failed to commit randomness');
+      if (!commitSuccess || !commitBlockNumber) {
+        throw new Error('Failed to commit randomness or retrieve commit block');
       }
 
-      // STEP 2: Wait 3 blocks then reveal winner
-      console.log('⏳ Waiting 3 blocks for randomness to mature...');
+      // STEP 2: Wait for target block (commitBlock + 4)
+      console.log('⏳ Waiting for randomness to mature (3+ blocks after commit)...');
       console.log('(Checking every 3 seconds for new blocks...)');
 
-      // Get current block and calculate target block (need +4 because contract requires block.number > commitBlock + 3)
+      // Calculate target block based on COMMIT block, not current block
+      const targetBlock = commitBlockNumber + 4; // Contract requires > commitBlock + 3
       const currentBlock = await provider.getBlockNumber();
-      const targetBlock = currentBlock + 4;
-      console.log(`📊 Current block: ${currentBlock}, Target block: ${targetBlock} (need 4+ blocks for reveal)`);
+      console.log(`📊 Commit block: ${commitBlockNumber}, Current block: ${currentBlock}, Target block: ${targetBlock}`);
 
-      // Poll for target block (check every 3 seconds instead of waiting 50s)
+      // Add timeout protection (max 5 minutes = 300 seconds)
+      const startTime = Date.now();
+      const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
+      // Poll for target block with timeout
       while (true) {
+        // Check timeout
+        if (Date.now() - startTime > TIMEOUT_MS) {
+          throw new Error('⏱️ Timeout: Block polling exceeded 5 minutes. Provider may be stuck. Please refresh and try again.');
+        }
+
         const latestBlock = await provider.getBlockNumber();
         const blocksRemaining = targetBlock - latestBlock;
         console.log(`🔍 Current block: ${latestBlock}/${targetBlock} (${blocksRemaining} blocks remaining)`);

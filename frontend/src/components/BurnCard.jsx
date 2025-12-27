@@ -17,11 +17,29 @@ const BurnCard = ({
 
   const [bonusPercent, setBonusPercent] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [hasReefExtension, setHasReefExtension] = useState(true);
 
-  // Check if mobile on mount
+  // Enhanced mobile detection (user agent + screen size + wallet capability)
   useEffect(() => {
-    const checkMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    setIsMobile(checkMobile);
+    const checkMobile = () => {
+      // Check user agent
+      const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+      // Check screen size (mobile typically < 768px width)
+      const mobileScreen = window.innerWidth < 768;
+
+      // Check if Reef Wallet Extension exists
+      const hasExtension = typeof window.reef !== 'undefined';
+
+      setIsMobile(mobileUA || mobileScreen);
+      setHasReefExtension(hasExtension);
+    };
+
+    checkMobile();
+
+    // Re-check on window resize
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
@@ -72,28 +90,83 @@ const BurnCard = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {/* Mobile Warning */}
-          {isMobile && (
+          {/* Mobile Warning - Enhanced with actionable guidance */}
+          {(isMobile || !hasReefExtension) && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               style={{
                 marginBottom: '1.5rem',
-                padding: '1rem',
+                padding: '1.25rem',
                 background: 'rgba(255, 165, 0, 0.1)',
-                border: '1px solid orange',
-                borderRadius: '8px',
+                border: '2px solid orange',
+                borderRadius: '12px',
                 fontSize: '0.9rem'
               }}
             >
-              <p style={{ fontWeight: '600', marginBottom: '0.5rem', color: 'orange' }}>
-                📱 Mobile Not Supported Yet!
+              <p style={{ fontWeight: '600', marginBottom: '0.75rem', color: 'orange', fontSize: '1.1rem' }}>
+                {isMobile ? '📱 Mobile Not Supported' : '⚠️ Reef Wallet Not Found'}
               </p>
-              <p style={{ fontSize: '0.85rem', lineHeight: '1.4', color: 'var(--text-secondary)' }}>
-                Please use a <strong>desktop browser</strong> (Chrome, Firefox, Brave) with the <strong>Reef Wallet Extension</strong> installed.
+
+              <p style={{ fontSize: '0.9rem', lineHeight: '1.5', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                {isMobile ? (
+                  <>
+                    Please use a <strong>desktop browser</strong> (Chrome, Firefox, Brave) with the <strong>Reef Wallet Extension</strong> installed.
+                  </>
+                ) : (
+                  <>
+                    Please install the <strong>Reef Wallet Extension</strong> for your desktop browser.
+                  </>
+                )}
               </p>
-              <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', opacity: 0.7 }}>
-                Mobile support coming in V4! 🚀
+
+              {/* Action buttons */}
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                {isMobile && (
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      alert('✅ Link copied! Open on desktop browser.');
+                    }}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      background: 'rgba(255, 165, 0, 0.2)',
+                      border: '1px solid orange',
+                      borderRadius: '6px',
+                      color: 'orange',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    📋 Copy Link
+                  </button>
+                )}
+
+                {!hasReefExtension && (
+                  <a
+                    href="https://docs.reef.io/docs/users/extension/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      padding: '0.5rem 1rem',
+                      background: 'rgba(112, 67, 255, 0.2)',
+                      border: '1px solid var(--reef-purple)',
+                      borderRadius: '6px',
+                      color: 'var(--reef-purple)',
+                      textDecoration: 'none',
+                      fontSize: '0.85rem',
+                      fontWeight: '500',
+                      display: 'inline-block'
+                    }}
+                  >
+                    🦈 Install Reef Extension
+                  </a>
+                )}
+              </div>
+
+              <p style={{ fontSize: '0.75rem', marginTop: '1rem', opacity: 0.7, fontStyle: 'italic' }}>
+                Mobile support is <strong>planned</strong> for future updates.
               </p>
             </motion.div>
           )}
@@ -104,11 +177,21 @@ const BurnCard = ({
           <motion.button
             className="btn btn-primary"
             onClick={connectWallet}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            disabled={isMobile || !hasReefExtension}
+            whileHover={(!isMobile && hasReefExtension) ? { scale: 1.05 } : {}}
+            whileTap={(!isMobile && hasReefExtension) ? { scale: 0.95 } : {}}
+            style={{
+              opacity: (isMobile || !hasReefExtension) ? 0.5 : 1,
+              cursor: (isMobile || !hasReefExtension) ? 'not-allowed' : 'pointer'
+            }}
           >
             🌊 Connect Wallet
           </motion.button>
+          {(isMobile || !hasReefExtension) && (
+            <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: 'orange' }}>
+              ⚠️ Connection disabled on mobile/without extension
+            </p>
+          )}
         </motion.div>
       ) : (
         <div>
