@@ -57,7 +57,7 @@ V4 will be the **production-ready deployment** with higher stakes (950-1500 REEF
 
 ### 🎯 BLOCK WAIT TIME ANALYSIS: 3 vs 5 vs 6 vs 8 Blocks
 
-**Question:** "și dacă punem 6 blocuri să aștepte este mult mai sigur? sau 8?"
+**Question:** "What if we set 6 blocks to wait, is it much safer? Or 8?"
 
 | Wait Time | Validator Collusion Probability | Attack Cost | Delay | Recommendation |
 |-----------|--------------------------------|-------------|-------|----------------|
