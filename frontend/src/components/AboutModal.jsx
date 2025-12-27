@@ -321,13 +321,152 @@ const AboutModal = ({ isOpen, onClose }) => {
               </div>
             </section>
 
+            {/* Contributors & Thanks */}
+            <section style={{ marginBottom: '2rem' }}>
+              <h2 style={{ fontSize: '1.8rem', marginBottom: '1rem', color: 'var(--reef-purple)' }}>
+                🙏 Contributors & Thanks
+              </h2>
+              <p style={{ marginBottom: '1.5rem', fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+                ReefBurner wouldn't be possible without the help of amazing community members.
+              </p>
+
+              {/* Security Contributors */}
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(112, 67, 255, 0.1) 0%, rgba(255, 67, 185, 0.05) 100%)',
+                border: '1px solid rgba(112, 67, 255, 0.3)',
+                borderRadius: '12px',
+                padding: '1.5rem',
+                marginBottom: '1rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <span style={{ fontSize: '2rem', marginRight: '0.75rem' }}>🛡️</span>
+                  <div>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '0.25rem' }}>
+                      Security Research
+                    </h3>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
+                      Critical vulnerability discovery & mitigation
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{
+                  background: 'rgba(0, 0, 0, 0.2)',
+                  borderRadius: '8px',
+                  padding: '1rem',
+                  marginTop: '1rem'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                    <div style={{
+                      background: 'linear-gradient(135deg, #7043ff 0%, #ff43b9 100%)',
+                      borderRadius: '50%',
+                      width: '48px',
+                      height: '48px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.5rem',
+                      flexShrink: 0
+                    }}>
+                      👨‍💻
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                        LaOnDa
+                      </h4>
+                      <p style={{ fontSize: '0.9rem', lineHeight: '1.5', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+                        Comprehensive security review identifying critical vulnerabilities:
+                      </p>
+                      <ul style={{ fontSize: '0.85rem', lineHeight: '1.6', marginLeft: '1.5rem', color: 'var(--text-secondary)' }}>
+                        <li>Revealer bias attack prevention</li>
+                        <li>DoS protection mechanisms</li>
+                        <li>Witnet oracle integration guidance</li>
+                        <li>Adversarial testing framework</li>
+                      </ul>
+                      <div style={{
+                        marginTop: '0.75rem',
+                        padding: '0.5rem 0.75rem',
+                        background: 'rgba(112, 67, 255, 0.2)',
+                        borderRadius: '6px',
+                        fontSize: '0.8rem',
+                        color: 'var(--reef-purple)',
+                        display: 'inline-block'
+                      }}>
+                        🏆 V4 Security MVP
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Community Feedback */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
+                padding: '1.5rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <span style={{ fontSize: '2rem', marginRight: '0.75rem' }}>💬</span>
+                  <div>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '0.25rem' }}>
+                      Community Feedback
+                    </h3>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
+                      User experience improvements & bug reports
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: '1rem' }}>
+                  <p style={{ fontSize: '0.9rem', lineHeight: '1.6', color: 'var(--text-secondary)' }}>
+                    Special thanks to <strong style={{ color: 'var(--reef-pink)' }}>Reef Community members</strong> for:
+                  </p>
+                  <ul style={{ fontSize: '0.85rem', lineHeight: '1.6', marginLeft: '1.5rem', marginTop: '0.5rem', color: 'var(--text-secondary)' }}>
+                    <li>Error handling improvements</li>
+                    <li>Mobile detection enhancements</li>
+                    <li>UI/UX suggestions</li>
+                    <li>Testing & bug reports</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Want to Contribute */}
+              <div style={{
+                marginTop: '1.5rem',
+                padding: '1rem',
+                background: 'rgba(112, 67, 255, 0.05)',
+                border: '1px dashed rgba(112, 67, 255, 0.3)',
+                borderRadius: '8px',
+                textAlign: 'center'
+              }}>
+                <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                  🌟 <strong>Want to contribute?</strong>
+                </p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  Report bugs, suggest features, or help improve security on our{' '}
+                  <a
+                    href="https://github.com/XenobuD/reef-burner-dapp"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--reef-purple)', textDecoration: 'underline' }}
+                  >
+                    GitHub repository
+                  </a>
+                </p>
+              </div>
+            </section>
+
             {/* Footer */}
             <div style={{ textAlign: 'center', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--card-border)' }}>
               <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                Built with ❤️ for the Reef Community by XenobuD
+                Built with ❤️ for the Reef Community by <strong style={{ color: 'var(--reef-pink)' }}>XenobuD</strong>
               </p>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
                 Open Source • Transparent • Verifiable
+              </p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '1rem', opacity: 0.6 }}>
+                V3 Testing Phase • December 2025
               </p>
             </div>
           </div>
