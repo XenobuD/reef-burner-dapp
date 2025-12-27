@@ -104,64 +104,46 @@ const ContributorsBox = () => {
         </motion.div>
 
         {/* Community - General */}
-        <a
-          href="https://t.me/Dan"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none' }}
-        >
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '10px',
-              padding: '1rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '1rem',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.3rem',
-              flexShrink: 0
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.03)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '10px',
+          padding: '1rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem'
+        }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '50%',
+            width: '40px',
+            height: '40px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.3rem',
+            flexShrink: 0
+          }}>
+            💬
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{
+              fontSize: '1.05rem',
+              fontWeight: '600',
+              marginBottom: '0.25rem',
+              color: 'var(--text-primary)'
             }}>
-              💬
-            </div>
-            <div style={{ flex: 1 }}>
-              <h3 style={{
-                fontSize: '1.05rem',
-                fontWeight: '600',
-                marginBottom: '0.25rem',
-                color: 'var(--text-primary)'
-              }}>
-                Dan (Reef Community)
-              </h3>
-              <p style={{
-                fontSize: '0.8rem',
-                color: 'var(--text-secondary)',
-                margin: 0
-              }}>
-                Testing & Feedback
-              </p>
-            </div>
-            <div style={{
-              fontSize: '1.2rem',
-              opacity: 0.6
+              Reef Community
+            </h3>
+            <p style={{
+              fontSize: '0.8rem',
+              color: 'var(--text-secondary)',
+              margin: 0
             }}>
-              📱
-            </div>
-          </motion.div>
-        </a>
+              Testing & Feedback
+            </p>
+          </div>
+        </div>
 
       </div>
 
