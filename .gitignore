@@ -47,3 +47,4 @@ deployments/
 **/*private*key*
 *.pem
 *.key
+V4_IMPLEMENTATION_PLAN.md
