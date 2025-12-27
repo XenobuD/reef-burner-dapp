@@ -87,10 +87,13 @@ const BurnCard = ({
               }}
             >
               <p style={{ fontWeight: '600', marginBottom: '0.5rem', color: 'orange' }}>
-                📱 Mobile Users: Use Reef Wallet App!
+                📱 Mobile Not Supported Yet!
               </p>
               <p style={{ fontSize: '0.85rem', lineHeight: '1.4', color: 'var(--text-secondary)' }}>
-                Open this site in the <strong>Reef Wallet in-app browser</strong> to connect.
+                Please use a <strong>desktop browser</strong> (Chrome, Firefox, Brave) with the <strong>Reef Wallet Extension</strong> installed.
+              </p>
+              <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', opacity: 0.7 }}>
+                Mobile support coming in V4! 🚀
               </p>
             </motion.div>
           )}
