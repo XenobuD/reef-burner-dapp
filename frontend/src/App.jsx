@@ -5,6 +5,7 @@ import StatsPanel from './components/StatsPanel';
 import BurnCard from './components/BurnCard';
 import ParticipantsList from './components/ParticipantsList';
 import WinnerHistory from './components/WinnerHistory';
+import ContributorsBox from './components/ContributorsBox';
 import AnimatedBackground from './components/AnimatedBackground';
 import AboutModal from './components/AboutModal';
 
@@ -688,6 +689,9 @@ function App() {
             loading={loading}
           />
         </motion.div>
+
+        {/* Contributors Box */}
+        <ContributorsBox />
 
         {/* Footer Info */}
         <motion.div
